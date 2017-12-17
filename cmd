@@ -9,7 +9,7 @@ create req:
 
 sign req:
 	openssl ca -cert cacert.pem -keyfile cakey.pem -create_serial -in user1_req.pem -notext -outdir new_certs -out /dev/null
-	(for server)openssl ca -cert cacert.pem -keyfile cakey.pem -create_serial -extensions server -in user1_req.pem -notext -outdir new_certs -out /dev/null
+	(for server)openssl ca -cert cacert.pem -keyfile cakey.pem -create_serial -extensions server -in server_req.pem -notext -outdir new_certs -out /dev/null
 
 view cert:
 	openssl x509 -in XXX.pem -text -noout
