@@ -4,3 +4,4 @@ gate:
 
 server:
     echo 1 > /proc/sys/net/ipv4/ip_forward
+    iptables -t nat -A POSTROUTING -d 192.168.1.0/24 -j SNAT --to-source 10.5.0.6 --random
