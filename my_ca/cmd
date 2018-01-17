@@ -23,3 +23,6 @@ update crl:
 
 generate dh:
 	openssl dhparam -out dh2048.pem 2048
+
+generate pkcs12:
+	openssl pkcs12 -export -inkey key/user2_key.pem -in new_certs/B31A1B8B989635F0.pem -certfile cacert.pem -name ccw_user2 -out user2.p12
