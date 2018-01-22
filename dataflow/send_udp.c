@@ -126,9 +126,7 @@ int main(int argc, char *argv[])
 			exit(EXIT_FAILURE);
 		}
 
-		free(send_buf);
-
-		/*
+        /*
 		char recv_buf[RECV_BUF_SIZE];
 		ssize_t nread;
 		if (nwrite + 1 > RECV_BUF_SIZE) {
@@ -143,7 +141,9 @@ int main(int argc, char *argv[])
 			exit(EXIT_FAILURE);
 		}
 		printf("Received %ld bytes: %s\n", (long) nread, recv_buf);
-		*/
+        */
+
+		free(send_buf);
 	}
 
 	exit(EXIT_SUCCESS);
