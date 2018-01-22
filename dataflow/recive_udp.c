@@ -255,6 +255,7 @@ int main(int argc, char **argv)
     ret = uv_udp_recv_start(&udp_handle, alloc_cb, recv_cb);
     if (ret) {
         fprintf(stderr, "%s: Starting UDP recive failed: %s\n", __func__, uv_strerror(ret));
+        free_recv_buf();
         uv_close((uv_handle_t*)&udp_handle, udp_handle_close_cb);
         uv_loop_close(&udp_loop);
         exit(EXIT_FAILURE);
@@ -274,6 +275,8 @@ int main(int argc, char **argv)
     assert(ret == 0);
 
     uv_loop_close(&udp_loop);
+
+    free_recv_buf();
 
     exit(EXIT_SUCCESS);
 }
