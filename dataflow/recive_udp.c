@@ -9,6 +9,25 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <linux/types.h>
+#include <arpa/inet.h>
+#include <pcap/pcap.h>
+#include <assert.h>
+
+typedef __u8  u8;
+typedef __u16 u16;
+typedef __u32 u32;
+typedef __u64 u64;
+
+#define EMU
+#ifdef EMU
+static char errbuf[PCAP_ERRBUF_SIZE];
+static pcap_t *pcap_handle = NULL;
+static struct pcap_pkthdr *pkt_header = NULL;
+static const unsigned char *pkt_data = NULL;
+static u8 my_mac[6];
+static char *pcap_filename = NULL;
+#endif
 
 static const int DEFAULT_PORT = 5544;
 static char active_addr[128];
@@ -23,6 +42,44 @@ static uv_timer_t loop_alarm;
 static char *chunks[RECIVE_CHUNK_COUNT];
 int chunk_index = 0;
 static pthread_mutex_t chunk_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+#ifdef EMU
+int reopen_pcap_file()
+{
+	int ret = 0;
+
+	assert(pcap_filename != NULL);
+
+	fprintf(stdout, "load file: %s.\n", pcap_filename);
+
+	if (pcap_handle)
+		pcap_close(pcap_handle);
+
+	pcap_handle = pcap_open_offline(pcap_filename, errbuf);
+	if (!pcap_handle) {
+		fprintf(stderr, "open failed: %s.\n", errbuf);
+		pcap_handle = NULL;
+		return -1;
+	}
+
+    if (pcap_datalink(pcap_handle) != 1) {
+		fprintf(stderr, "not ETHERNET packet\n");
+        pcap_close(pcap_handle);
+		pcap_handle = NULL;
+		return -1;
+    }
+
+	ret = pcap_next_ex(pcap_handle, &pkt_header, &pkt_data); // skip first packet
+	if (ret == -1) {
+		fprintf(stderr, "skip first packet failed: %s.\n", pcap_geterr(pcap_handle));
+		pcap_close(pcap_handle);
+		pcap_handle = NULL;
+		return -1;
+	}
+
+	return 0;
+}
+#endif
 
 void udp_handle_close_cb(uv_handle_t *handle)
 {
@@ -93,6 +150,12 @@ static int send_buf(int fd, unsigned char *buf, ssize_t len, const struct sockad
 
 static void recv_cb(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf, const struct sockaddr *addr, unsigned flags)
 {
+#ifdef EMU
+	unsigned char *p;
+	ssize_t len;
+	int ret;
+#endif
+
     if (nread < 0) {
         fprintf(stderr, "%s: UDP recive error: %s\n", __func__, uv_strerror(nread));
         return;
@@ -106,8 +169,42 @@ static void recv_cb(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf, const 
     }
 
     print_buf((unsigned char*)(buf->base), nread);
+#ifdef EMU
+	if (!pcap_handle)
+		return;
+
+	ret = pcap_next_ex(pcap_handle, &pkt_header, &pkt_data);
+	if (ret == -2) {
+		if (reopen_pcap_file() < 0)
+			return;
+	} else if (ret == -1) {
+		fprintf(stderr, "%s\n", pcap_geterr(pcap_handle));
+		return;
+	}
+
+	while (!memcmp(my_mac, &pkt_data[6], 6)) {
+		len = ntohs(*(u16*)(&pkt_data[38])) - 8; // minus length of UDP header
+		p = (unsigned char*)&pkt_data[42];
+
+		if (send_buf(handle->io_watcher.fd, p, len, addr) < 0)
+			fprintf(stderr, "send message failed: %s\n", strerror(errno));
+
+		ret = pcap_next_ex(pcap_handle, &pkt_header, &pkt_data);
+		if (ret == -2) {
+			if (reopen_pcap_file() < 0)
+				return;
+			break;
+		} else if (ret == -1) {
+			fprintf(stderr, "%s\n", pcap_geterr(pcap_handle));
+			pcap_close(pcap_handle);
+			pcap_handle = NULL;
+			return;
+		}
+	}
+#else
     if (send_buf(handle->io_watcher.fd, (unsigned char*)(buf->base), nread, addr) < 0)
         fprintf(stderr, "send message failed: %s\n", strerror(errno));
+#endif
 }
 
 static void timeout_cb(uv_timer_t *timer) { }
@@ -193,10 +290,10 @@ int main(int argc, char **argv)
 {
     struct sigaction sigac;
     char *nic_name = NULL;
-    int opt, ret = 0;
+    int opt, ret = 0, status;
     int port = DEFAULT_PORT;
 
-    while ((opt = getopt(argc, argv, "i:p:")) != -1) {
+    while ((opt = getopt(argc, argv, "i:p:f:")) != -1) {
         switch (opt) {
         case 'i':
             nic_name = optarg;
@@ -208,8 +305,13 @@ int main(int argc, char **argv)
                 exit(EXIT_FAILURE);
             }
             break;
+#ifdef EMU
+        case 'f':
+            pcap_filename = optarg;
+            break;
+#endif
         default:
-            fprintf(stderr, "Usage: %s [-i nic_name] [-p port]", argv[0]);
+            fprintf(stderr, "Usage: %s [-i nic_name] [-p port] [-f pcap_filename]", argv[0]);
             exit(EXIT_FAILURE);
         }
     }
@@ -266,8 +368,25 @@ int main(int argc, char **argv)
     ret = uv_timer_start(&loop_alarm, timeout_cb, 100, 100);
     assert(ret == 0);
 
+#ifdef EMU
+    if (!pcap_filename) {
+        printf("no pcap file setup, use -f.\n");
+        status = EXIT_FAILURE;
+        goto out;
+    }
+    memset(errbuf, 0, PCAP_ERRBUF_SIZE);
+    if (reopen_pcap_file() < 0) {
+        status = EXIT_FAILURE;
+        goto out;
+    }
+    memcpy(my_mac, &pkt_data[0], 6);
+#endif
+
     uv_run(&udp_loop, UV_RUN_DEFAULT);
 
+    status = EXIT_SUCCESS;
+
+out:
     uv_udp_recv_stop(&udp_handle);
     uv_close((uv_handle_t*)&udp_handle, udp_handle_close_cb);
 
@@ -278,5 +397,5 @@ int main(int argc, char **argv)
 
     free_recv_buf();
 
-    exit(EXIT_SUCCESS);
+    exit(status);
 }

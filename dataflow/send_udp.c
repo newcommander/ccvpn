@@ -65,10 +65,10 @@ int main(int argc, char *argv[])
 	ssize_t nwrite;
 	char *send_buf = NULL;
 
-	if (argc < 4) {
-		fprintf(stderr, "Usage: %s host port datafile...\n", argv[0]);
-		exit(EXIT_FAILURE);
-	}
+    if (argc < 4) {
+        fprintf(stderr, "Usage: %s host port datafile...\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
 
 	/* Obtain address(es) matching host/port */
 
@@ -81,7 +81,6 @@ int main(int argc, char *argv[])
 	s = getaddrinfo(argv[1], argv[2], &hints, &result);
 	if (s != 0) {
 		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
-		free(send_buf);
 		exit(EXIT_FAILURE);
 	}
 
@@ -103,7 +102,6 @@ int main(int argc, char *argv[])
 
 	if (rp == NULL) {               /* No address succeeded */
 		fprintf(stderr, "Could not connect\n");
-		free(send_buf);
 		exit(EXIT_FAILURE);
 	}
 
@@ -126,8 +124,8 @@ int main(int argc, char *argv[])
 			exit(EXIT_FAILURE);
 		}
 
-        /*
 		char recv_buf[RECV_BUF_SIZE];
+        memset(recv_buf, 0, RECV_BUF_SIZE);
 		ssize_t nread;
 		if (nwrite + 1 > RECV_BUF_SIZE) {
 			fprintf(stderr,	"Ignoring long message in argument %d\n", i);
@@ -140,8 +138,7 @@ int main(int argc, char *argv[])
 			free(send_buf);
 			exit(EXIT_FAILURE);
 		}
-		printf("Received %ld bytes: %s\n", (long) nread, recv_buf);
-        */
+		fprintf(stdout, "Received %ld bytes: %s\n", (long) nread, recv_buf);
 
 		free(send_buf);
 	}

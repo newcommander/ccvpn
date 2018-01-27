@@ -3,7 +3,7 @@ LINK=-L.
 
 CC=gcc
 CFLAGS=-c -g -Wall -fPIC
-LFLAGS=-levent_core -luv -lrt -lm
+LFLAGS=-levent_core -luv -lrt -lm -lpcap
 
 OBJ=listener_tcp.o
 OBJ_UDP=recive_udp.o
