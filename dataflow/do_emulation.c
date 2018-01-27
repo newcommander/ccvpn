@@ -25,59 +25,59 @@ static u8 my_mac[6];
 
 int alloc_and_read_data(const char *filename, char **buf, ssize_t *len)
 {
-	struct stat st;
-	size_t remain;
-	int fd, ret;
-	char *p;
+    struct stat st;
+    size_t remain;
+    int fd, ret;
+    char *p;
 
-	fd = open(filename, O_RDONLY);
-	if (fd < 0) {
-		fprintf(stderr, "open file failed: %s, %s\n", filename, strerror(errno));
-		return -1;
-	}
+    fd = open(filename, O_RDONLY);
+    if (fd < 0) {
+        fprintf(stderr, "open file failed: %s, %s\n", filename, strerror(errno));
+        return -1;
+    }
 
-	if (fstat(fd, &st) < 0) {
-		fprintf(stderr, "stat file failed: %s, %s\n", filename, strerror(errno));
-		close(fd);
-		return -1;
-	}
+    if (fstat(fd, &st) < 0) {
+        fprintf(stderr, "stat file failed: %s, %s\n", filename, strerror(errno));
+        close(fd);
+        return -1;
+    }
 
-	*buf = (char*)calloc(st.st_size, 1);
-	if (!(*buf)) {
-		fprintf(stderr, "alloc buf failed: %s\n", strerror(errno));
-		close(fd);
-		return -1;
-	}
+    *buf = (char*)calloc(st.st_size, 1);
+    if (!(*buf)) {
+        fprintf(stderr, "alloc buf failed: %s\n", strerror(errno));
+        close(fd);
+        return -1;
+    }
 
-	remain = st.st_size;
-	p = *buf;
-	while (remain) {
-		ret = read(fd, p, remain);
-		if (ret < 0) {
-			fprintf(stderr, "read data failed: %s\n", strerror(errno));
-			free(*buf);
-			close(fd);
-			return -1;
-		}
-		remain -= ret;
-		p += ret;
-	}
-	*len = st.st_size;
+    remain = st.st_size;
+    p = *buf;
+    while (remain) {
+        ret = read(fd, p, remain);
+        if (ret < 0) {
+            fprintf(stderr, "read data failed: %s\n", strerror(errno));
+            free(*buf);
+            close(fd);
+            return -1;
+        }
+        remain -= ret;
+        p += ret;
+    }
+    *len = st.st_size;
 
-	close(fd);
+    close(fd);
 
-	return 0;
+    return 0;
 }
 
 int main(int argc, char *argv[])
 {
-	struct addrinfo hints;
-	struct addrinfo *result, *rp;
+    struct addrinfo hints;
+    struct addrinfo *result, *rp;
     struct pcap_pkthdr *pkt_header = NULL;
     const unsigned char *pkt_data = NULL, *p;
     pcap_t *handle = NULL;
-	ssize_t len;
-	int sfd, ret;
+    ssize_t len;
+    int sfd, ret;
 
     if (argc < 4) {
         fprintf(stderr, "Usage: %s host port datafile...\n", argv[0]);
@@ -94,51 +94,51 @@ int main(int argc, char *argv[])
 
     /* Obtain address(es) matching host/port */
 
-	memset(&hints, 0, sizeof(struct addrinfo));
-	hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
-	hints.ai_socktype = SOCK_DGRAM; /* Datagram socket */
-	hints.ai_flags = 0;
-	hints.ai_protocol = 0;          /* Any protocol */
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
+    hints.ai_socktype = SOCK_DGRAM; /* Datagram socket */
+    hints.ai_flags = 0;
+    hints.ai_protocol = 0;          /* Any protocol */
 
-	ret = getaddrinfo(argv[1], argv[2], &hints, &result);
-	if (ret != 0) {
-		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(ret));
-		exit(EXIT_FAILURE);
-	}
+    ret = getaddrinfo(argv[1], argv[2], &hints, &result);
+    if (ret != 0) {
+        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(ret));
+        exit(EXIT_FAILURE);
+    }
 
-	/* getaddrinfo() returns a list of address structures.
-	 * Try each address until we successfully connect(2).
-	 * If socket(2) (or connect(2)) fails, we (close the socket
-	 * and) try the next address. */
+    /* getaddrinfo() returns a list of address structures.
+     * Try each address until we successfully connect(2).
+     * If socket(2) (or connect(2)) fails, we (close the socket
+     * and) try the next address. */
 
-	for (rp = result; rp != NULL; rp = rp->ai_next) {
-		sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
-		if (sfd == -1)
-			continue;
+    for (rp = result; rp != NULL; rp = rp->ai_next) {
+        sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+        if (sfd == -1)
+            continue;
 
-		if (connect(sfd, rp->ai_addr, rp->ai_addrlen) != -1)
-			break;                  /* Success */
+        if (connect(sfd, rp->ai_addr, rp->ai_addrlen) != -1)
+            break;                  /* Success */
 
-		close(sfd);
-	}
+        close(sfd);
+    }
 
-	if (rp == NULL) {               /* No address succeeded */
-		fprintf(stderr, "Could not connect\n");
-		exit(EXIT_FAILURE);
-	}
+    if (rp == NULL) {               /* No address succeeded */
+        fprintf(stderr, "Could not connect\n");
+        exit(EXIT_FAILURE);
+    }
 
-	freeaddrinfo(result);           /* No longer needed */
+    freeaddrinfo(result);           /* No longer needed */
 
     memset(errbuf, 0, PCAP_ERRBUF_SIZE);
     handle = pcap_open_offline(argv[3], errbuf);
     if (!handle) {
-		fprintf(stderr, "%s\n", errbuf);
-		exit(EXIT_FAILURE);
+        fprintf(stderr, "%s\n", errbuf);
+        exit(EXIT_FAILURE);
     }
     if (pcap_datalink(handle) != 1) {
-		fprintf(stderr, "not ETHERNET packet\n");
+        fprintf(stderr, "not ETHERNET packet\n");
         pcap_close(handle);
-		exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
 
     ret = pcap_next_ex(handle, &pkt_header, &pkt_data);
@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
         else if (ret == -1) {
             fprintf(stderr, "%s\n", pcap_geterr(handle));
             pcap_close(handle);
-		    exit(EXIT_FAILURE);
+            exit(EXIT_FAILURE);
         }
     } while (1);
 

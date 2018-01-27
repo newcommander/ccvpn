@@ -19,7 +19,7 @@ static void read_cb(struct bufferevent *bev, void *user_data)
     struct evbuffer *input = bufferevent_get_input(bev);
     char *buf = NULL, *p = NULL;
     int offset = 0;
-	size_t i, len;
+    size_t i, len;
 
     len = evbuffer_get_length(input);
     buf = (char*)calloc(len + 1, 1);
@@ -88,7 +88,7 @@ static void event_cb(struct bufferevent *bev, short events, void *user_data)
 
     bufferevent_flush(bev, EV_WRITE, BEV_FLUSH);
 
-	bufferevent_free(bev);
+    bufferevent_free(bev);
 }
 
 static void listener_cb(struct evconnlistener *listener, evutil_socket_t fd, struct sockaddr *sa, int socklen, void *user_data)
@@ -220,14 +220,14 @@ int main(int argc, char **argv)
             LEV_OPT_REUSEABLE|LEV_OPT_CLOSE_ON_FREE, -1, (struct sockaddr*)&sin, sizeof(sin));
     if (!listener) {
         fprintf(stderr, "Could not create a listener!\n");
-		ret = 1;
+        ret = 1;
         goto listener_bind_failed;
     }
 
     signal_event = evsignal_new(base, SIGINT, signal_cb, (void *)base);
     if (!signal_event || event_add(signal_event, NULL) < 0) {
         fprintf(stderr, "Could not create/add a signal event!\n");
-		ret = 1;
+        ret = 1;
         goto evsignal_new_failed;
     }
 

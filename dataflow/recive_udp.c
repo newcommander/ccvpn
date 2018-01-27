@@ -46,38 +46,38 @@ static pthread_mutex_t chunk_mutex = PTHREAD_MUTEX_INITIALIZER;
 #ifdef EMU
 int reopen_pcap_file()
 {
-	int ret = 0;
+    int ret = 0;
 
-	assert(pcap_filename != NULL);
+    assert(pcap_filename != NULL);
 
-	fprintf(stdout, "load file: %s.\n", pcap_filename);
+    fprintf(stdout, "load file: %s.\n", pcap_filename);
 
-	if (pcap_handle)
-		pcap_close(pcap_handle);
-
-	pcap_handle = pcap_open_offline(pcap_filename, errbuf);
-	if (!pcap_handle) {
-		fprintf(stderr, "open failed: %s.\n", errbuf);
-		pcap_handle = NULL;
-		return -1;
-	}
-
-    if (pcap_datalink(pcap_handle) != 1) {
-		fprintf(stderr, "not ETHERNET packet\n");
+    if (pcap_handle)
         pcap_close(pcap_handle);
-		pcap_handle = NULL;
-		return -1;
+
+    pcap_handle = pcap_open_offline(pcap_filename, errbuf);
+    if (!pcap_handle) {
+        fprintf(stderr, "open failed: %s.\n", errbuf);
+        pcap_handle = NULL;
+        return -1;
     }
 
-	ret = pcap_next_ex(pcap_handle, &pkt_header, &pkt_data); // skip first packet
-	if (ret == -1) {
-		fprintf(stderr, "skip first packet failed: %s.\n", pcap_geterr(pcap_handle));
-		pcap_close(pcap_handle);
-		pcap_handle = NULL;
-		return -1;
-	}
+    if (pcap_datalink(pcap_handle) != 1) {
+        fprintf(stderr, "not ETHERNET packet\n");
+        pcap_close(pcap_handle);
+        pcap_handle = NULL;
+        return -1;
+    }
 
-	return 0;
+    ret = pcap_next_ex(pcap_handle, &pkt_header, &pkt_data); // skip first packet
+    if (ret == -1) {
+        fprintf(stderr, "skip first packet failed: %s.\n", pcap_geterr(pcap_handle));
+        pcap_close(pcap_handle);
+        pcap_handle = NULL;
+        return -1;
+    }
+
+    return 0;
 }
 #endif
 
@@ -151,9 +151,9 @@ static int send_buf(int fd, unsigned char *buf, ssize_t len, const struct sockad
 static void recv_cb(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf, const struct sockaddr *addr, unsigned flags)
 {
 #ifdef EMU
-	unsigned char *p;
-	ssize_t len;
-	int ret;
+    unsigned char *p;
+    ssize_t len;
+    int ret;
 #endif
 
     if (nread < 0) {
@@ -170,37 +170,37 @@ static void recv_cb(uv_udp_t *handle, ssize_t nread, const uv_buf_t *buf, const 
 
     print_buf((unsigned char*)(buf->base), nread);
 #ifdef EMU
-	if (!pcap_handle)
-		return;
+    if (!pcap_handle)
+        return;
 
-	ret = pcap_next_ex(pcap_handle, &pkt_header, &pkt_data);
-	if (ret == -2) {
-		if (reopen_pcap_file() < 0)
-			return;
-	} else if (ret == -1) {
-		fprintf(stderr, "%s\n", pcap_geterr(pcap_handle));
-		return;
-	}
+    ret = pcap_next_ex(pcap_handle, &pkt_header, &pkt_data);
+    if (ret == -2) {
+        if (reopen_pcap_file() < 0)
+            return;
+    } else if (ret == -1) {
+        fprintf(stderr, "%s\n", pcap_geterr(pcap_handle));
+        return;
+    }
 
-	while (!memcmp(my_mac, &pkt_data[6], 6)) {
-		len = ntohs(*(u16*)(&pkt_data[38])) - 8; // minus length of UDP header
-		p = (unsigned char*)&pkt_data[42];
+    while (!memcmp(my_mac, &pkt_data[6], 6)) {
+        len = ntohs(*(u16*)(&pkt_data[38])) - 8; // minus length of UDP header
+        p = (unsigned char*)&pkt_data[42];
 
-		if (send_buf(handle->io_watcher.fd, p, len, addr) < 0)
-			fprintf(stderr, "send message failed: %s\n", strerror(errno));
+        if (send_buf(handle->io_watcher.fd, p, len, addr) < 0)
+            fprintf(stderr, "send message failed: %s\n", strerror(errno));
 
-		ret = pcap_next_ex(pcap_handle, &pkt_header, &pkt_data);
-		if (ret == -2) {
-			if (reopen_pcap_file() < 0)
-				return;
-			break;
-		} else if (ret == -1) {
-			fprintf(stderr, "%s\n", pcap_geterr(pcap_handle));
-			pcap_close(pcap_handle);
-			pcap_handle = NULL;
-			return;
-		}
-	}
+        ret = pcap_next_ex(pcap_handle, &pkt_header, &pkt_data);
+        if (ret == -2) {
+            if (reopen_pcap_file() < 0)
+                return;
+            break;
+        } else if (ret == -1) {
+            fprintf(stderr, "%s\n", pcap_geterr(pcap_handle));
+            pcap_close(pcap_handle);
+            pcap_handle = NULL;
+            return;
+        }
+    }
 #else
     if (send_buf(handle->io_watcher.fd, (unsigned char*)(buf->base), nread, addr) < 0)
         fprintf(stderr, "send message failed: %s\n", strerror(errno));
