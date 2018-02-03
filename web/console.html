@@ -25,14 +25,23 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-size: 12px;
+    font-size: 20px;
     font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti, "Microsoft YaHei";
     line-height: 1.428571429;
     color: #333333;
-    width: 50px;
+    width: 100px;
     display: block;
     overflow-x: hidden;
     overflow-y: hidden;
+}
+.main {
+    top: 50px;
+    bottom: 0px;
+    left: 100px;
+    right: 0px;
+    width: auto;
+    position: absolute;
+    background-color: Lavender;
 }
 </style>
 </head>
@@ -42,7 +51,11 @@
 <div class="topbar">
 </div>
 <div class="sidebar" id="app">
-    <at-button type="primary" @click="showMessage">main</at-button>
+    <at-button type="primary" @click="showMessage">main</at-button><br>
+    <i class="icon icon-activity"></i>
+</div>
+<div class="main" id="main">
+    <at-button type="success" @click="showMessage">success</at-button>
 </div>
 
 <script>
@@ -51,6 +64,14 @@ var app = new Vue({
     methods: {
         showMessage: function () {
             this.$Message('Just begin!')
+        }
+    }
+})
+var main = new Vue({
+    el: '#main',
+    methods: {
+        showMessage: function () {
+            this.$Message('Just begin from main!')
         }
     }
 })
