@@ -41,7 +41,7 @@
     right: 0px;
     width: auto;
     position: absolute;
-    background-color: Lavender;
+    background-color: LightSlateGray;
 }
 </style>
 </head>
@@ -55,7 +55,15 @@
     <i class="icon icon-activity"></i>
 </div>
 <div class="main" id="main">
-    <at-button type="success" @click="showMessage">success</at-button>
+    <div class="row at-row" v-for="n in 24/2">
+        <div :class="`col-md-${n}`"><div class="at-box-row bg-c-brand-dark">
+            <at-button type="success" @click="showMessage">success!</at-button>
+        </div></div>
+        <div :class="`col-md-${24 - n}`"><div class="at-box-row bg-c-brand-light">
+            <at-rate :show-text="true"></at-rate>
+        </div></div>
+    </div>
+    <at-alert message="this is alert closable" closable></at-alert>
 </div>
 
 <script>
