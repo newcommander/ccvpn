@@ -29,7 +29,7 @@
     font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti, "Microsoft YaHei";
     line-height: 1.428571429;
     color: #333333;
-    width: 100px;
+    width: 200px;
     display: block;
     overflow-x: hidden;
     overflow-y: hidden;
@@ -37,24 +37,74 @@
 .main {
     top: 50px;
     bottom: 0px;
-    left: 100px;
+    left: 200px;
     right: 0px;
     width: auto;
     position: absolute;
     background-color: LightSlateGray;
+}
+#content {
+    height: auto;
+    width: 70%;
+    margin: 0 auto;
+    //display: flex;
+    padding: 40px 32px 32px;
+    background-color: LightSteelBlue;
+}
+#base {
+    height: 100%;
+    width: 100%;
+    background-color: LightYellow;
+}
+#item {
+    height: 100%;
+    width: 100%;
+    margin: 0 auto;
+#    background-color: Red;
 }
 </style>
 </head>
 
 <body>
 
-<div class="topbar">
+<div class="topbar" id="topbar">
 </div>
-<div class="sidebar" id="app">
+<div class="sidebar" id="sidebar">
     <at-button type="primary" @click="showMessage">main</at-button><br>
     <i class="icon icon-activity"></i>
 </div>
 <div class="main" id="main">
+    <div id="content">
+        <div id="base">
+            <div class="row at-row no-gutter flex-around container">
+                <div class="col-md-12"><div class="at-box-row bg-c-brand-dark">
+                    <div id="item" background-color="LightSteelBlue">
+                    <at-card style="width: 300px;" :body-style="{ padding: 0 }">
+                    <div>
+                        <img style="width: 100%" src="https://misc.aotu.io/koppthe/at-ui/cover.jpg">
+                        <div style="padding: 14px;">
+                            <p>AT-UI</p>
+                        </div>
+                    </div>
+                    </at-card>
+                    </div>
+                </div></div>
+                <div class="col-md-12"><div class="at-box-row bg-c-brand-light">
+                    <div id="item">
+                    <at-card style="width: 300px;" :body-style="{ padding: 0 }">
+                    <div>
+                        <img style="width: 100%" src="https://misc.aotu.io/koppthe/at-ui/cover.jpg">
+                        <div style="padding: 14px;">
+                            <p>AT-UI</p>
+                        </div>
+                    </div>
+                    </at-card>
+                    </div>
+                </div></div>
+            </div>
+        </div>
+    </div>
+    <!--
     <div class="row at-row" v-for="n in 24/2">
         <div :class="`col-md-${n}`"><div class="at-box-row bg-c-brand-dark">
             <at-button type="success" @click="showMessage">success!</at-button>
@@ -64,14 +114,23 @@
         </div></div>
     </div>
     <at-alert message="this is alert closable" closable></at-alert>
+    -->
 </div>
 
 <script>
 var app = new Vue({
-    el: '#app',
+    el: '#topbar',
     methods: {
         showMessage: function () {
             this.$Message('Just begin!')
+        }
+    }
+})
+var main = new Vue({
+    el: '#sidebar',
+    methods: {
+        showMessage: function () {
+            this.$Message('Just begin from main!')
         }
     }
 })
@@ -83,6 +142,7 @@ var main = new Vue({
         }
     }
 })
+//document.getElementById("main").innerHTML = '<object type="text/html" data="main.html" width="100%" height="100%"></object>';
 </script>
 </body>
 </html>
