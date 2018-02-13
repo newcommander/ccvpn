@@ -1,123 +1,30 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
 <title>Console</title>
+<meta charset="UTF-8">
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/at-ui-style/css/at.min.css">
+<link rel="stylesheet" href="console.css">
 <script src="//cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/at-ui/dist/at.min.js"></script>
-<style>
-.topbar {
-    background: LightSeaGreen;
-    height: 50px;
-    width: 100%;
-    left: 0;
-    top: 0;
-    position: fixed;
-    z-index: 99;
-}
-.sidebar {
-    top: 50px;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    background-color: LightSteelBlue;
-    z-index: 98;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-size: 20px;
-    font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti, "Microsoft YaHei";
-    line-height: 1.428571429;
-    color: #333333;
-    width: 200px;
-    display: block;
-    overflow-x: hidden;
-    overflow-y: hidden;
-}
-.main {
-    top: 50px;
-    bottom: 0px;
-    left: 200px;
-    right: 0px;
-    width: auto;
-    position: absolute;
-    background-color: LightSlateGray;
-}
-#content {
-    height: auto;
-    width: 70%;
-    margin: 0 auto;
-    //display: flex;
-    padding: 40px 32px 32px;
-    background-color: LightSteelBlue;
-}
-#base {
-    height: 100%;
-    width: 100%;
-    background-color: LightYellow;
-}
-#item {
-    height: 100%;
-    width: 100%;
-    margin: 0 auto;
-#    background-color: Red;
-}
-</style>
 </head>
 
 <body>
-
-<div class="topbar" id="topbar">
+<div id="topbar">
 </div>
-<div class="sidebar" id="sidebar">
+<div id="sidebar">
     <at-button type="primary" @click="showMessage">main</at-button><br>
     <i class="icon icon-activity"></i>
 </div>
 <div class="main" id="main">
-    <div id="content">
-        <div id="base">
-            <div class="row at-row no-gutter flex-around container">
-                <div class="col-md-12"><div class="at-box-row bg-c-brand-dark">
-                    <div id="item" background-color="LightSteelBlue">
-                    <at-card style="width: 300px;" :body-style="{ padding: 0 }">
-                    <div>
-                        <img style="width: 100%" src="https://misc.aotu.io/koppthe/at-ui/cover.jpg">
-                        <div style="padding: 14px;">
-                            <p>AT-UI</p>
-                        </div>
-                    </div>
-                    </at-card>
-                    </div>
-                </div></div>
-                <div class="col-md-12"><div class="at-box-row bg-c-brand-light">
-                    <div id="item">
-                    <at-card style="width: 300px;" :body-style="{ padding: 0 }">
-                    <div>
-                        <img style="width: 100%" src="https://misc.aotu.io/koppthe/at-ui/cover.jpg">
-                        <div style="padding: 14px;">
-                            <p>AT-UI</p>
-                        </div>
-                    </div>
-                    </at-card>
-                    </div>
-                </div></div>
-            </div>
+    <div class="content" id="content">
+        <div class="table-left">
+            nihao
         </div>
     </div>
-    <!--
-    <div class="row at-row" v-for="n in 24/2">
-        <div :class="`col-md-${n}`"><div class="at-box-row bg-c-brand-dark">
-            <at-button type="success" @click="showMessage">success!</at-button>
-        </div></div>
-        <div :class="`col-md-${24 - n}`"><div class="at-box-row bg-c-brand-light">
-            <at-rate :show-text="true"></at-rate>
-        </div></div>
-    </div>
-    <at-alert message="this is alert closable" closable></at-alert>
-    -->
 </div>
 
-<script>
+<script type="text/javascript">
 var app = new Vue({
     el: '#topbar',
     methods: {
@@ -130,7 +37,9 @@ var main = new Vue({
     el: '#sidebar',
     methods: {
         showMessage: function () {
-            this.$Message('Just begin from main!')
+            //this.$Message('Just begin from sidebar!')
+            //this.$Message('nihao: ' + document.getElementById('sidebar').getAttribute("height"))
+            this.$Message('nihao: ' + document.getElementById("sidebar").)
         }
     }
 })

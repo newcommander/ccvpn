@@ -1,0 +1,67 @@
+#topbar {
+    background: LightSeaGreen;
+    height: 50px;
+    width: 100%;
+    left: 0;
+    top: 0;
+    position: fixed;
+    z-index: 99;
+}
+#sidebar {
+    top: 50px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background-color: DarkGray;
+    z-index: 98;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-size: 20px;
+    font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti, "Microsoft YaHei";
+    line-height: 1.428571429;
+    color: #333333;
+    width: 200px;
+    display: block;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+.main {
+    top: 50px;
+    bottom: 0px;
+    left: 200px;
+    right: 0px;
+    height: auto;
+    width: auto;
+    position: absolute;
+    background-color: LightSlateGray;
+}
+.base {
+    height: auto;
+    width: 70%;
+    margin: 0 auto;
+    padding: 40px 32px 32px;
+    background-color: LightSteelBlue;
+}
+.content {
+    height: auto;
+    width: 70%;
+    margin: 0 auto;
+    padding: 40px 32px 32px;
+    display: block;
+    background-color: LightYellow;
+}
+.table-left {
+    display: block;
+    float: left;
+    height: 50px;
+    width: 300px;
+    background-color: Red;
+}
+.table-right {
+    display: block;
+    float: right;
+    height: 50px;
+    width: 300px;
+    background-color: Green;
+}
