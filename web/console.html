@@ -10,36 +10,297 @@
 </head>
 
 <body>
-<div id="topbar">
+
+<div class="header" id="header">
 </div>
-<div id="sidebar">
-    <at-button type="primary" @click="showMessage">main</at-button><br>
-    <i class="icon icon-activity"></i>
-</div>
-<div class="main" id="main">
-    <div class="content" id="content">
-        <div class="table-left">
-            nihao
-        </div>
+
+<div class="main" id=main>
+    <div class="row at-row no-gutter">
+        <div :class="`col-md-6`"><div class="at-box-row bg-c-brand-dark">
+                <div class="sidebar">
+                    <div class="menu">
+                        <at-menu theme="light" mode="inline" active-name="0">
+                            <at-menu-item name="0" disabled><i class="icon icon-box"></i>子菜单</at-menu-item>
+                            <at-submenu>
+                                <template slot="title"><i class="icon icon-home"></i>导航菜单一</template>
+                                <at-menu-item-group title="分组一">
+                                    <at-menu-item name="1-1">子菜单一</at-menu-item>
+                                    <at-menu-item name="1-2">子菜单二</at-menu-item>
+                                </at-menu-item-group>
+                                <at-menu-item-group title="分组二">
+                                    <at-menu-item name="1-3">子菜单三</at-menu-item>
+                                    <at-menu-item name="1-4">子菜单四</at-menu-item>
+                                </at-menu-item-group>
+                            </at-submenu>
+                            <at-submenu>
+                                <template slot="title"><i class="icon icon-life-buoy"></i>导航菜单二</template>
+                                <at-menu-item name="2-1">子菜单一</at-menu-item>
+                                <at-menu-item name="2-2">子菜单二</at-menu-item>
+                                <at-menu-item name="2-3" disabled>子菜单三</at-menu-item>
+                                <at-menu-item name="2-4">子菜单四</at-menu-item>
+                            </at-submenu>
+                            <at-submenu>
+                                <template slot="title"><i class="icon icon-command"></i>导航菜单三</template>
+                                <at-menu-item name="3-1">子菜单一</at-menu-item>
+                                <at-menu-item name="3-2">子菜单二</at-menu-item>
+                                <at-menu-item name="3-3">子菜单三</at-menu-item>
+                                <at-menu-item name="3-4">子菜单四</at-menu-item>
+                            </at-submenu>
+                            <at-submenu disabled>
+                                <template slot="title"><i class="icon icon-inbox"></i>导航菜单四</template>
+                                <at-menu-item name="4-1">子菜单一</at-menu-item>
+                                <at-menu-item name="4-2">子菜单二</at-menu-item>
+                            </at-submenu>
+                        </at-menu>
+                    </div>
+                </div>
+        </div></div>
+        <div :class="`col-md-18`"><div class="at-box-row bg-c-brand-light">
+                <div class="content">
+                    <div class="content-title">Server Configuration</div>
+                    <div class="content-base">
+                        <div class="row at-row no-gutter">
+                            <div :class="`col-md-12`"><div class="at-box-row bg-c-brand-dark">
+                                    <div class="content-left">
+                                        <at-card style="width: 100%;">
+                                            <h4 slot="title">Deamon mode</h4>
+                                            <div slot="extra">
+                                                <at-switch size="large">
+                                                    <span slot="checkedText">ON</span>
+                                                    <span slot="unCheckedText">OFF</span>
+                                                </at-switch size="large">
+                                            </div>
+                                            <div>
+                                                Start VPN server program in deamon mode.
+                                            </div>
+                                        </at-card>
+                                    </div>
+                            </div></div>
+                            <div :class="`col-md-12`"><div class="at-box-row bg-c-brand-light">
+                                    <div class="content-right">
+                                        <at-card style="width: 100%;">
+                                            <h4 slot="title">Ask password</h4>
+                                            <div slot="extra">
+                                                <at-switch size="large">
+                                                    <span slot="checkedText">ON</span>
+                                                    <span slot="unCheckedText">OFF</span>
+                                                </at-switch size="large">
+                                            </div>
+                                            <div>
+                                                Ask password before start VPN server.
+                                            </div>
+                                        </at-card>
+                                    </div>
+                            </div></div>
+                        </div>
+                        <div class="row at-row no-gutter">
+                            <div :class="`col-md-12`"><div class="at-box-row bg-c-brand-dark">
+                                    <div class="content-left">
+                                        <at-card style="width: 100%;">
+                                            <h4 slot="title">PORT</h4>
+                                            <div slot="extra">
+                                                <div class="margin-top-10">
+                                                    <at-input-number size="small" value="2346" min="1024" max="65535"></at-input-number>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                UDP port number the VPN server listen on.
+                                            </div>
+                                        </at-card>
+                                    </div>
+                            </div></div>
+                            <div :class="`col-md-12`"><div class="at-box-row bg-c-brand-light">
+                                    <div class="content-right">
+                                        <at-card style="width: 100%;">
+                                            <h4 slot="title">CA certificate</h4>
+                                            <div slot="extra">
+                                                <div class="margin-top-10">
+                                                    <at-input placeholder="/opt/openvpn/cacert.pem"></at-input>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                Path to CA certificate file.
+                                            </div>
+                                        </at-card>
+                                    </div>
+                            </div></div>
+                        </div>
+                        <div class="row at-row no-gutter">
+                            <div :class="`col-md-12`"><div class="at-box-row bg-c-brand-dark">
+                                    <div class="content-left">
+                                        <at-card style="width: 100%;">
+                                            <h4 slot="title">Certificate</h4>
+                                            <div slot="extra">
+                                                <div class="margin-top-10">
+                                                    <at-input placeholder="/opt/openvpn/server_cert.pem"></at-input>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                Path to server certificate file.
+                                            </div>
+                                        </at-card>
+                                    </div>
+                            </div></div>
+                            <div :class="`col-md-12`"><div class="at-box-row bg-c-brand-light">
+                                    <div class="content-right">
+                                        <at-card style="width: 100%;">
+                                            <h4 slot="title">Private key</h4>
+                                            <div slot="extra">
+                                                <div class="margin-top-10">
+                                                    <at-input placeholder="/opt/openvpn/server_key.pem"></at-input>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                Path to server private key file.
+                                            </div>
+                                        </at-card>
+                                    </div>
+                            </div></div>
+                        </div>
+                        <div class="row at-row no-gutter">
+                            <div :class="`col-md-12`"><div class="at-box-row bg-c-brand-dark">
+                                    <div class="content-left">
+                                        <at-card style="width: 100%;">
+                                            <h4 slot="title">Diffie hellman</h4>
+                                            <div slot="extra">
+                                                <div class="margin-top-10">
+                                                    <at-input placeholder="/opt/openvpn/dh2048.pem"></at-input>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                Path to Diffie hellman parameters file.
+                                            </div>
+                                        </at-card>
+                                    </div>
+                            </div></div>
+                            <div :class="`col-md-12`"><div class="at-box-row bg-c-brand-light">
+                                    <div class="content-right">
+                                        <at-card style="width: 100%;">
+                                            <h4 slot="title">VPN Subnet</h4>
+                                            <div slot="extra">
+                                                <div class="margin-top-10">
+                                                    <at-input placeholder="10.6.0.0/24"></at-input>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                Supply a VPN subnet, each host will get its IP address from this subnet.
+                                            </div>
+                                        </at-card>
+                                    </div>
+                            </div></div>
+                        </div>
+                        <div class="row at-row no-gutter">
+                            <div :class="`col-md-12`"><div class="at-box-row bg-c-brand-dark">
+                                    <div class="content-left">
+                                        <at-card style="width: 100%;">
+                                            <h4 slot="title">IP pool persist</h4>
+                                            <div slot="extra">
+                                                <div class="margin-top-10">
+                                                    <at-input placeholder="/opt/openvpn/ipp.txt"></at-input>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                Maintain a record of client <-> virtual IP address associations in this file.
+                                            </div>
+                                        </at-card>
+                                    </div>
+                            </div></div>
+                            <div :class="`col-md-12`"><div class="at-box-row bg-c-brand-light">
+                                    <div class="content-right">
+                                        <at-card style="width: 100%;">
+                                            <h4 slot="title">Private subnet</h4>
+                                            <div slot="extra">
+                                                <div class="margin-top-10">
+                                                    <at-input placeholder="192.168.0.0 255.255.255.0"></at-input>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                Push routes to the client to allow it to reach other private subnets behind the server.
+                                            </div>
+                                        </at-card>
+                                    </div>
+                            </div></div>
+                        </div>
+                        <div class="row at-row no-gutter">
+                            <div :class="`col-md-12`"><div class="at-box-row bg-c-brand-dark">
+                                    <div class="content-left">
+                                        <at-card style="width: 100%;">
+                                            <h4 slot="title">DNS server</h4>
+                                            <div slot="extra">
+                                                <div class="margin-top-10">
+                                                    <at-input placeholder="180.76.76.76"></at-input>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                DNS server.
+                                            </div>
+                                        </at-card>
+                                    </div>
+                            </div></div>
+                            <div :class="`col-md-12`"><div class="at-box-row bg-c-brand-light">
+                                    <div class="content-right">
+                                        <at-card style="width: 100%;">
+                                            <h4 slot="title">Client to Client</h4>
+                                            <div slot="extra">
+                                                <at-switch size="large">
+                                                    <span slot="checkedText">ON</span>
+                                                    <span slot="unCheckedText">OFF</span>
+                                                </at-switch size="large">
+                                            </div>
+                                            <div>
+                                                If enable, clients will be able to access each other.
+                                            </div>
+                                        </at-card>
+                                    </div>
+                            </div></div>
+                        </div>
+                        <div class="row at-row no-gutter">
+                            <div :class="`col-md-12`"><div class="at-box-row bg-c-brand-dark">
+                                    <div class="content-left">
+                                        <at-card style="width: 100%;">
+                                            <h4 slot="title">Status file</h4>
+                                            <div slot="extra">
+                                                <div class="margin-top-10">
+                                                    <at-input placeholder="/opt/openvpn/openvpn-status.log"></at-input>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                This file will show the status of clients connected to the VPN server.
+                                            </div>
+                                        </at-card>
+                                    </div>
+                            </div></div>
+                            <div :class="`col-md-12`"><div class="at-box-row bg-c-brand-light">
+                                    <div class="content-right">
+                                        <at-card style="width: 100%;">
+                                            <h4 slot="title">System log</h4>
+                                            <div slot="extra">
+                                                <div class="margin-top-10">
+                                                    <at-input placeholder="/opt/openvpn/openvpn.log"></at-input>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                This log file will records VPN server log in runtime.
+                                            </div>
+                                        </at-card>
+                                    </div>
+                            </div></div>
+                        </div>
+                    </div>
+                </div>
+        </div></div>
     </div>
 </div>
 
+<div class="footer" id="footer">
+</div>
+
 <script type="text/javascript">
-var app = new Vue({
-    el: '#topbar',
+var header = new Vue({
+    el: '#header',
     methods: {
         showMessage: function () {
-            this.$Message('Just begin!')
-        }
-    }
-})
-var main = new Vue({
-    el: '#sidebar',
-    methods: {
-        showMessage: function () {
-            //this.$Message('Just begin from sidebar!')
-            //this.$Message('nihao: ' + document.getElementById('sidebar').getAttribute("height"))
-            this.$Message('nihao: ' + document.getElementById("sidebar").)
+            this.$Message('message from header')
         }
     }
 })
@@ -47,7 +308,15 @@ var main = new Vue({
     el: '#main',
     methods: {
         showMessage: function () {
-            this.$Message('Just begin from main!')
+            this.$Message('message from main');
+        }
+    }
+})
+var footer = new Vue({
+    el: '#footer',
+    methods: {
+        showMessage: function () {
+            this.$Message('message from footer')
         }
     }
 })

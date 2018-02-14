@@ -1,67 +1,69 @@
-#topbar {
-    background: LightSeaGreen;
-    height: 50px;
-    width: 100%;
-    left: 0;
-    top: 0;
-    position: fixed;
-    z-index: 99;
+body {
+    font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti, "Microsoft YaHei";
+    line-height: 1.5;
+    font-size: 14px;
 }
-#sidebar {
-    top: 50px;
-    position: fixed;
-    bottom: 0;
+.header {
+    top: 0;
     left: 0;
-    background-color: DarkGray;
-    z-index: 98;
+    height: 80px;
+    width: 100%;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-size: 20px;
-    font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti, "Microsoft YaHei";
-    line-height: 1.428571429;
-    color: #333333;
-    width: 200px;
     display: block;
-    overflow-x: hidden;
-    overflow-y: hidden;
+    box-sizing: border-box;
+    background-color: #9CAFD5;
+    position: relative;
+}
+.footer {
+    display: block;
+    margin: 0;
+    padding: 30px 0 30px;
+    box-sizing: border-box;
+    background-color: #9CAFD5;
 }
 .main {
-    top: 50px;
-    bottom: 0px;
-    left: 200px;
-    right: 0px;
+    display: block;
+    width: 90%;
     height: auto;
-    width: auto;
-    position: absolute;
-    background-color: LightSlateGray;
+    margin: 30px auto;
+    background-color: #DCFFFF;
+    box-shadow: 0 4px 30px 0 rgba(0,32,111,0.8);
 }
-.base {
-    height: auto;
-    width: 70%;
-    margin: 0 auto;
-    padding: 40px 32px 32px;
-    background-color: LightSteelBlue;
+.sidebar {
+    margin: 0 4px;
+    width: 100%;
+    padding: 20px 20px;
+    box-sizing: border-box;
+}
+.menu {
+    padding: 10px 10px;
 }
 .content {
+    margin: 0 4px;
+    width: 100%;
+    padding: 20px 20px;
+    box-sizing: border-box;
+}
+.content-title {
+    line-height: 50px;
+    font-size: 24px;
+}
+.content-base {
+    margin 0 auto;
+}
+.content-left {
+    display: block;
+    width: 100%;
     height: auto;
-    width: 70%;
-    margin: 0 auto;
-    padding: 40px 32px 32px;
-    display: block;
-    background-color: LightYellow;
+    padding: 10px 10px;
 }
-.table-left {
+.content-right {
     display: block;
-    float: left;
-    height: 50px;
-    width: 300px;
-    background-color: Red;
+    width: 100%;
+    height: auto;
+    padding: 10px 10px;
 }
-.table-right {
-    display: block;
-    float: right;
-    height: 50px;
-    width: 300px;
-    background-color: Green;
+.margin-top-10 {
+    margin-top: 10px;
 }
