@@ -5,15 +5,14 @@
 <meta charset="UTF-8">
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/at-ui-style/css/at.min.css">
 <link rel="stylesheet" href="console.css">
+<script type="text/javascript" src="jquery-3.3.1.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/at-ui/dist/at.min.js"></script>
+<script type="text/javascript" src="console.js"></script>
 </head>
-
 <body>
-
 <div class="header" id="header">
 </div>
-
 <div class="main" id=main>
     <div class="row at-row no-gutter">
         <div :class="`col-md-6`"><div class="at-box-row bg-c-brand-dark">
@@ -58,6 +57,7 @@
         <div :class="`col-md-18`"><div class="at-box-row bg-c-brand-light">
                 <div class="content">
                     <div class="content-title">Server Configuration</div>
+                    <button id="debug-button">debug button</button>
                     <div class="content-base">
                         <div class="row at-row no-gutter">
                             <div :class="`col-md-12`"><div class="at-box-row bg-c-brand-dark">
@@ -291,11 +291,10 @@
         </div></div>
     </div>
 </div>
-
 <div class="footer" id="footer">
 </div>
-
 <script type="text/javascript">
+/*
 var header = new Vue({
     el: '#header',
     methods: {
@@ -303,7 +302,7 @@ var header = new Vue({
             this.$Message('message from header')
         }
     }
-})
+});
 var main = new Vue({
     el: '#main',
     methods: {
@@ -311,7 +310,7 @@ var main = new Vue({
             this.$Message('message from main');
         }
     }
-})
+});
 var footer = new Vue({
     el: '#footer',
     methods: {
@@ -319,7 +318,12 @@ var footer = new Vue({
             this.$Message('message from footer')
         }
     }
-})
+});
+$("#debug-button").click(function()
+{
+    $(".menu").toggle();
+});
+*/
 //document.getElementById("main").innerHTML = '<object type="text/html" data="main.html" width="100%" height="100%"></object>';
 </script>
 </body>
