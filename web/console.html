@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/at-ui-style/css/at.min.css">
 <link rel="stylesheet" href="console.css">
 <script type="text/javascript" src="jquery-3.3.1.min.js"></script>
-<script src="//cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="//cdn.jsdelivr.net/npm/at-ui/dist/at.min.js"></script>
 <script type="text/javascript" src="console.js"></script>
 </head>
@@ -65,7 +65,7 @@
                                         <at-card style="width: 100%;">
                                             <h4 slot="title">Deamon mode</h4>
                                             <div slot="extra">
-                                                <at-switch size="large">
+                                                <at-switch ref="deamon_mode" size="large">
                                                     <span slot="checkedText">ON</span>
                                                     <span slot="unCheckedText">OFF</span>
                                                 </at-switch size="large">
@@ -100,7 +100,7 @@
                                             <h4 slot="title">PORT</h4>
                                             <div slot="extra">
                                                 <div class="margin-top-10">
-                                                    <at-input-number size="small" value="2346" min="1024" max="65535"></at-input-number>
+                                                    <at-input-number ref="port" size="small" value="2346" min="1024" max="65535"></at-input-number>
                                                 </div>
                                             </div>
                                             <div>
@@ -114,8 +114,8 @@
                                         <at-card style="width: 100%;">
                                             <h4 slot="title">CA certificate</h4>
                                             <div slot="extra">
-                                                <div class="margin-top-10">
-                                                    <at-input placeholder="/opt/openvpn/cacert.pem"></at-input>
+                                                <div class="margin-top-10" id="capath">
+                                                   <at-input ref="ca_path" @change="change_ca_path" placeholder="/opt/openvpn/cacert.pem"></at-input>
                                                 </div>
                                             </div>
                                             <div>
