@@ -18,8 +18,9 @@ static void read_cb(struct bufferevent *bev, void *user_data)
 {
     struct evbuffer *input = bufferevent_get_input(bev);
     char *buf = NULL, *p = NULL;
+    char *response = "HTTP/1.1 200 OK\nServer: nginx/1.12.2\nDate: Mon, 19 Feb 2018 06:51:54 GMT\nContent-Type: text/html\nContent-Length: 9\nLast-Modified: Tue, 02 Jan 2018 14:19:42 GMT\nConnection: keep-alive\nETag: \"5a4b94fe-264\"\nAccept-Ranges: bytes\n\nnihaolala";
     int offset = 0;
-	size_t i, len;
+    size_t len;
 
     len = evbuffer_get_length(input);
     buf = (char*)calloc(len + 1, 1);
@@ -33,7 +34,8 @@ static void read_cb(struct bufferevent *bev, void *user_data)
     while ((offset = bufferevent_read(bev, p, buf + len - p)) > 0)
         p += offset;
 
-#if 1
+#if 0
+    unsigned int i;
     fprintf(stdout, "read[%lu]:\n", len);
     for (i = 0; i < len; i++) {
         fprintf(stdout, "%02X", (unsigned char)buf[i]);
@@ -47,8 +49,10 @@ static void read_cb(struct bufferevent *bev, void *user_data)
     }
     fprintf(stdout, "\n");
 #endif
+    fprintf(stdout, "%s\n", buf);
 
-	bufferevent_write(bev, buf, len);
+	//bufferevent_write(bev, buf, len);
+	bufferevent_write(bev, response, strlen(response));
 	bufferevent_flush(bev, EV_WRITE, BEV_FLUSH);
 
 	free(buf);

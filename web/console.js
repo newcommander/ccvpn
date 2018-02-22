@@ -34,6 +34,7 @@ $("#debug-button").click(function () {
     main.$Message("" + main.$refs.deamon_mode.checkStatus + ", " + main.$refs.ca_path.currentValue + ', ' + tmp);
     main.$refs.ca_path.currentValue = "nihao";
     tmp = main.$refs.ca_path.currentValue;
+    $.post("d", "{json_data}");
 });
 //$(".content").find(".content-left").css({"color":"red","border":"2px solid red"});
 });
