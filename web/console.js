@@ -18,6 +18,9 @@ var main = new Vue({
         change_ca_path: function (e) {
             this.$Message('Change CA path: ' + e);
             tmp = e;
+        },
+        buttonclick: function () {
+            this.$Message('button-click');
         }
     }
 });
@@ -30,11 +33,18 @@ var footer = new Vue({
     }
 });
 $("#debug-button").click(function () {
+    var lala = '{' +
+        '"item1":"data1",' +
+        '"item2":"data2",' +
+        '"data1":[1,2,3],' +
+        '"data2":[4,5,6]' +
+    '}';
     $(".menu").toggle();
-    main.$Message("" + main.$refs.deamon_mode.checkStatus + ", " + main.$refs.ca_path.currentValue + ', ' + tmp);
     main.$refs.ca_path.currentValue = "nihao";
-    tmp = main.$refs.ca_path.currentValue;
-    $.post("d", "{json_data}");
+    $.post("d", lala, function(data,status) {
+        lala = $.parseJSON("" + data);
+        main.$Message("" + lala.keepalive);
+    });
 });
 //$(".content").find(".content-left").css({"color":"red","border":"2px solid red"});
 });

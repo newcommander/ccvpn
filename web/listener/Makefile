@@ -2,6 +2,7 @@ INCLUDE=-I.
 LINK=-L.
 
 CC=gcc
+CXX=g++
 CFLAGS=-c -g -Wall -fPIC
 LFLAGS=-levent_core -luv -lrt -lm
 
@@ -10,11 +11,11 @@ TARGET=listener
 
 .PHONY: all clean
 
-%.o: %.c
-	$(CC) $(INCLUDE) $(CFLAGS) $< -o $@
+%.o: %.cpp
+	$(CXX) $(INCLUDE) $(CFLAGS) $< -o $@
 
 all: $(OBJ)
-	$(CC) $(LINK) $(OBJ) $(LFLAGS) -o $(TARGET)
+	$(CXX) $(LINK) $(OBJ) $(LFLAGS) -o $(TARGET)
 
 clean:
 	rm -f $(OBJ) $(TARGET)
