@@ -52,6 +52,10 @@ body {
 .content-base {
     margin 0 auto;
 }
+.content-buttons {
+    width: 100%;
+    padding: 10px 10px;
+}
 .content-left {
     display: block;
     width: 100%;
