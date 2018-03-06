@@ -1,4 +1,9 @@
 {
+    "management":"localhost 7505",
+    "proto":"udp",
+    "port":"2348",
+    "dev":"tun",
+	"server":"10.6.0.0 255.255.255.0",
     "cmd":[
         "daemon",
         "askpass",
@@ -6,24 +11,29 @@
         "persist-key",
         "persist-tun"
     ],
-    "management":"localhost 7505",
-    "port":"2348",
-    "proto":"udp",
-    "dev":"tun",
+    "ifconfig-pool-persist":"/opt/openvpn/ipp.txt",
+    "status":"/opt/openvpn/openvpn-status.log",
+    "log-append":" /opt/openvpn/openvpn.log",
+    "dh":"/opt/openvpn/dh2048.pem",
+	"route":[
+		"192.168.0.0 255.255.255.0"
+	],
     "ca":"/opt/openvpn/CA/cacert.pem",
     "cert":"/opt/openvpn/CA/new_certs/B31A1B8B989635ED.pem",
     "key":"/opt/openvpn/CA/keys/server_key.pem  # This file should be kept secret",
-    "dh":"/opt/openvpn/dh2048.pem",
-    "server":"10.6.0.0 255.255.255.0",
-    "ifconfig-pool-persist":"/opt/openvpn/ipp.txt",
-    "push":"route 192.168.0.0 255.255.255.0",
     "client-config-dir":"/opt/openvpn/ccd",
-    "route":"192.168.0.0 255.255.255.0",
-    "push":"dhcp-option DNS 180.76.76.76",
-    "push":"dhcp-option DNS 8.8.8.8",
+	"push":{
+		"route":[
+			"192.168.0.0 255.255.255.0"
+		],
+		"dhcp-option":{
+			"DNS":[
+				"180.76.76.76",
+				"8.8.8.8"
+			]
+		}
+	},
     "keepalive":"10 230",
     "cipher":"AES-256-CBC",
-    "status":"/opt/openvpn/openvpn-status.log",
-    "log-append":" /opt/openvpn/openvpn.log",
     "verb":"3"
 }
