@@ -1,10 +1,10 @@
 INCLUDE=-I.
 LINK=-L.
 
-CC=gcc
-CXX=g++
+CC=/usr/local/gcc-4.8.2/bin/gcc
+CXX=/usr/local/gcc-4.8.2/bin/g++
 CFLAGS=-c -g -Wall -fPIC
-LFLAGS=-levent_core -luv -lrt -lm
+LFLAGS=-levent_core -luv -lrt -lm -ljsoncpp
 
 OBJ=listener.o
 TARGET=listener

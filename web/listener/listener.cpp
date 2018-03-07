@@ -11,8 +11,11 @@
 #include <event2/bufferevent_struct.h>
 #include <event2/buffer.h>
 #include <event2/listener.h>
+#include <json/json.h>
 #include <uv.h>
 
+#include <iostream>
+#include <fstream>
 #include <vector>
 #include <map>
 
@@ -22,7 +25,6 @@
 using namespace std;
 
 static char active_addr[128];
-static char config[CONFIG_BUF_LEN];
 static char directive_holder[CONFIG_BUF_LEN * 2];
 static char config_json[CONFIG_BUF_LEN * 2];
 
@@ -30,18 +32,97 @@ static vector<char*> direct_cmd;
 static vector<char*>::iterator cmd_it;
 static map<char*, char*> direct_opt;
 static map<char*, char*>::iterator opt_it;
+static Json::Value config;
 
-static int config_to_json(char *content)
+static int config_to_jsoncpp(char *content)
 {
-    char *p1, *p2, *p3, *current, *opt, *arg, *head, *tail;
-    char tmp1[512], tmp2[512];
+	Json::CharReaderBuilder builder;
+	Json::CharReader *reader(builder.newCharReader());
+	string errs;
 
-    if (!content) {
+	if (!content) {
         fprintf(stderr, "content is NULL\n");
         return -1;
     }
-    if (strlen(content) == 0)
+
+	if (strlen(content) == 0)
         return -1;
+
+	if (!reader->parse(content, content + strlen(content), &config, &errs)) {
+		printf("parse json failed: %s\n", errs.c_str());
+		return -1;
+	}
+
+	return 0;
+}
+
+static int read_config_file(const char *filename, char *config_str)
+{
+    FILE *fp = NULL;
+    char *line = NULL;
+    size_t line_len;
+    ssize_t n_read;
+
+    fp = fopen(filename, "r");
+    if (!fp) {
+        fprintf(stderr, "open %s failed, %s\n", filename, strerror(errno));
+        return -1;
+    }
+
+    while ((n_read = getline(&line, &line_len, fp)) != -1) {
+        if ((line[0] == '#') || (line[0] == '\n') || (line[0] == ';'))
+            continue;
+        memcpy(config_str + strlen(config_str), line, n_read);
+    }
+    if (line)
+        free(line);
+
+    fclose(fp);
+
+    return 0;
+}
+
+static Json::Value load_config_to_json(char *filename)
+{
+	Json::Value config, empty;
+	struct stat st;
+	char *content = NULL;
+    char *p1, *p2, *p3, *current, *opt, *arg, *head, *tail;
+    char tmp1[512], tmp2[512];
+	size_t filesize;
+
+	empty.clear();
+	config = empty();
+
+	if (!filename) {
+        fprintf(stderr, "filename is NULL.\n");
+		goto out;
+    }
+
+	if (stat(filename, &st) < 0) {
+		printf("stat file %s failed.\n", filename);
+		goto out;
+	}
+
+	filesize = st.st_size;
+	if (filesize == 0) {
+		printf("empty config file: %s.\n", filename);
+		goto out;
+	}
+
+	content = (char*)calloc(file_size + 1, 1);
+	if (!content) {
+		printf("alloc config buffer failed.\n");
+		goto out;
+	}
+
+	if (read_config_file(filename, content) < 0)
+		goto out;
+
+    if (strlen(content) == 0) {
+		printf("content length is 0.\n");
+        goto out;
+	}
 
     p1 = content;
     current = directive_holder;
@@ -118,46 +199,11 @@ static int config_to_json(char *content)
     else
         current[0] = '}';
 
-    return 0;
-}
+out:
+	if (content)
+		free(content);
 
-static int load_config(const char *file_name)
-{
-    FILE *fp = NULL;
-    char *line = NULL;
-    size_t line_len;
-    ssize_t n_read;
-
-    if (!file_name) {
-        fprintf(stderr, "file_name is NULL\n");
-        return -1;
-    }
-
-    fp = fopen(file_name, "r");
-    if (!fp) {
-        fprintf(stderr, "open %s failed, %s\n", file_name, strerror(errno));
-        return -1;
-    }
-
-    memset(config, 0, CONFIG_BUF_LEN);
-    while ((n_read = getline(&line, &line_len, fp)) != -1) {
-        if ((line[0] == '#') || (line[0] == '\n') || (line[0] == ';'))
-            continue;
-        if ((strlen(config) + n_read + 1) > CONFIG_BUF_LEN) {
-            fprintf(stderr, "config buffer overflow.\n");
-            free(line);
-            fclose(fp);
-            return -1;
-        }
-        memcpy(config + strlen(config), line, n_read);
-    }
-
-    if (line)
-        free(line);
-
-    fclose(fp);
-
-    return 0;
+	return config;
 }
 
 static void read_cb(struct bufferevent *bev, void *user_data)
@@ -334,14 +380,22 @@ int main(int argc, char **argv)
     struct evconnlistener *listener = NULL;
     struct event *signal_event = NULL;
     struct sockaddr_in sin;
-    char *nic_name = NULL;
+    char *nic_name = NULL, *config_str = NULL;
     int opt, ret = 0;
     int port = DEFAULT_PORT;
 
-    load_config("server.conf");
-    config_to_json(config);
+    config_str = load_config("server.conf");
+	if (!config_str)
+		return 1;
 
-    while ((opt = getopt(argc, argv, "i:p:")) != -1) {
+	if (load_config_to_json(config_str) < 0) {
+		printf("Convert config to json format failed.\n");
+		free(config_str);
+		return 1;
+	}
+	free(config_str);
+
+	while ((opt = getopt(argc, argv, "i:p:")) != -1) {
         switch (opt) {
         case 'i':
             nic_name = optarg;
