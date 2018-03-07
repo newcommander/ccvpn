@@ -36,24 +36,24 @@ static Json::Value config;
 
 static int config_to_jsoncpp(char *content)
 {
-	Json::CharReaderBuilder builder;
-	Json::CharReader *reader(builder.newCharReader());
-	string errs;
+    Json::CharReaderBuilder builder;
+    Json::CharReader *reader(builder.newCharReader());
+    string errs;
 
-	if (!content) {
+    if (!content) {
         fprintf(stderr, "content is NULL\n");
         return -1;
     }
 
-	if (strlen(content) == 0)
+    if (strlen(content) == 0)
         return -1;
 
-	if (!reader->parse(content, content + strlen(content), &config, &errs)) {
-		printf("parse json failed: %s\n", errs.c_str());
-		return -1;
-	}
+    if (!reader->parse(content, content + strlen(content), &config, &errs)) {
+        printf("parse json failed: %s\n", errs.c_str());
+        return -1;
+    }
 
-	return 0;
+    return 0;
 }
 
 static int read_config_file(const char *filename, char *config_str)
@@ -84,45 +84,44 @@ static int read_config_file(const char *filename, char *config_str)
 
 static Json::Value load_config_to_json(char *filename)
 {
-	Json::Value config, empty;
-	struct stat st;
-	char *content = NULL;
+    Json::Value config;
+    struct stat st;
+    char *content = NULL;
     char *p1, *p2, *p3, *current, *opt, *arg, *head, *tail;
     char tmp1[512], tmp2[512];
-	size_t filesize;
+    size_t filesize;
 
-	empty.clear();
-	config = empty();
+    config.clear();
 
-	if (!filename) {
+    if (!filename) {
         fprintf(stderr, "filename is NULL.\n");
-		goto out;
+        goto out;
     }
 
-	if (stat(filename, &st) < 0) {
-		printf("stat file %s failed.\n", filename);
-		goto out;
-	}
+    if (stat(filename, &st) < 0) {
+        printf("stat file %s failed.\n", filename);
+        goto out;
+    }
 
-	filesize = st.st_size;
-	if (filesize == 0) {
-		printf("empty config file: %s.\n", filename);
-		goto out;
-	}
+    filesize = st.st_size;
+    if (filesize == 0) {
+        printf("empty config file: %s.\n", filename);
+        goto out;
+    }
 
-	content = (char*)calloc(file_size + 1, 1);
-	if (!content) {
-		printf("alloc config buffer failed.\n");
-		goto out;
-	}
+    content = (char*)calloc(filesize + 1, 1);
+    if (!content) {
+        printf("alloc config buffer failed.\n");
+        goto out;
+    }
 
-	if (read_config_file(filename, content) < 0)
-		goto out;
+    if (read_config_file(filename, content) < 0)
+        goto out;
 
     if (strlen(content) == 0) {
-		printf("content length is 0.\n");
+        printf("content length is 0.\n");
         goto out;
-	}
+    }
 
     p1 = content;
     current = directive_holder;
@@ -200,10 +199,10 @@ static Json::Value load_config_to_json(char *filename)
         current[0] = '}';
 
 out:
-	if (content)
-		free(content);
+    if (content)
+        free(content);
 
-	return config;
+    return config;
 }
 
 static void read_cb(struct bufferevent *bev, void *user_data)
@@ -243,12 +242,12 @@ static void read_cb(struct bufferevent *bev, void *user_data)
 #endif
     fprintf(stdout, "%s\n", buf);
 
-	//bufferevent_write(bev, buf, len);
-	bufferevent_write(bev, response, strlen(response));
-	bufferevent_write(bev, config_json, strlen(config_json));
-	bufferevent_flush(bev, EV_WRITE, BEV_FLUSH);
+    //bufferevent_write(bev, buf, len);
+    bufferevent_write(bev, response, strlen(response));
+    bufferevent_write(bev, config_json, strlen(config_json));
+    bufferevent_flush(bev, EV_WRITE, BEV_FLUSH);
 
-	free(buf);
+    free(buf);
 }
 
 static void write_cb(struct bufferevent *bev, void *user_data)
@@ -287,7 +286,7 @@ static void event_cb(struct bufferevent *bev, short events, void *user_data)
 
     bufferevent_flush(bev, EV_WRITE, BEV_FLUSH);
 
-	bufferevent_free(bev);
+    bufferevent_free(bev);
 }
 
 static void listener_cb(struct evconnlistener *listener, evutil_socket_t fd, struct sockaddr *sa, int socklen, void *user_data)
@@ -344,8 +343,8 @@ static int get_active_address(char *nic_name, char *buf, size_t len)
     }
 
     for (ifa = iflist; ifa; ifa = ifa->ifa_next) {
-		if (!ifa->ifa_addr)
-			continue;
+        if (!ifa->ifa_addr)
+            continue;
         if (ifa->ifa_addr->sa_family == AF_INET) {
             if (nic_name) {
                 if (strcmp(nic_name, ifa->ifa_name))
@@ -380,22 +379,11 @@ int main(int argc, char **argv)
     struct evconnlistener *listener = NULL;
     struct event *signal_event = NULL;
     struct sockaddr_in sin;
-    char *nic_name = NULL, *config_str = NULL;
+    char *nic_name = NULL, *filename = NULL;
     int opt, ret = 0;
     int port = DEFAULT_PORT;
 
-    config_str = load_config("server.conf");
-	if (!config_str)
-		return 1;
-
-	if (load_config_to_json(config_str) < 0) {
-		printf("Convert config to json format failed.\n");
-		free(config_str);
-		return 1;
-	}
-	free(config_str);
-
-	while ((opt = getopt(argc, argv, "i:p:")) != -1) {
+    while ((opt = getopt(argc, argv, "i:p:c:")) != -1) {
         switch (opt) {
         case 'i':
             nic_name = optarg;
@@ -407,10 +395,24 @@ int main(int argc, char **argv)
                 exit(EXIT_FAILURE);
             }
             break;
+        case 'c':
+            filename = optarg;
+            break;
         default:
             fprintf(stderr, "Usage: %s [-i nic_name]", argv[0]);
             exit(EXIT_FAILURE);
         }
+    }
+
+    if (!filename) {
+        printf("specify config filename use -f.\n");
+        return 1;
+    }
+
+    config = load_config_to_json(filename);
+    if (config.empty()) {
+        printf("Convert config to json format failed.\n");
+        return 1;
     }
 
     memset(active_addr, 0, sizeof(active_addr));
@@ -432,14 +434,14 @@ int main(int argc, char **argv)
             LEV_OPT_REUSEABLE|LEV_OPT_CLOSE_ON_FREE, -1, (struct sockaddr*)&sin, sizeof(sin));
     if (!listener) {
         fprintf(stderr, "Could not create a listener!\n");
-		ret = 1;
+        ret = 1;
         goto listener_bind_failed;
     }
 
     signal_event = evsignal_new(base, SIGINT, signal_cb, (void *)base);
     if (!signal_event || event_add(signal_event, NULL) < 0) {
         fprintf(stderr, "Could not create/add a signal event!\n");
-		ret = 1;
+        ret = 1;
         goto evsignal_new_failed;
     }
 
