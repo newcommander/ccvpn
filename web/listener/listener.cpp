@@ -32,8 +32,9 @@ static vector<char*> direct_cmd;
 static vector<char*>::iterator cmd_it;
 static map<char*, char*> direct_opt;
 static map<char*, char*>::iterator opt_it;
-static Json::Value config;
+static Json::Value g_config;
 
+/*
 static int config_to_jsoncpp(char *content)
 {
     Json::CharReaderBuilder builder;
@@ -55,11 +56,39 @@ static int config_to_jsoncpp(char *content)
 
     return 0;
 }
+*/
+
+static int get_next_word(char *line, char *current, char **begin, char **end)
+{
+	if (!line) {
+		*begin = NULL;
+		*end = NULL;
+		return -1;
+	}
+
+	while (isblank(*current))
+		current++;
+	if ((current == line + strlen(line)) || (*current == '#'))
+		goto failed;
+
+	*begin = current;
+	while (!isblank(*current))
+		current++;
+	*end = current;
+
+	return 0;
+
+failed:
+	*begin = line + strlen(line);
+	*end = *begin;
+	return -1;
+}
 
 static int read_config_file(const char *filename, char *config_str)
 {
     FILE *fp = NULL;
-    char *line = NULL;
+    char *line = NULL, *current = NULL;
+	char *begin, *end, *word = NULL;
     size_t line_len;
     ssize_t n_read;
 
@@ -70,8 +99,17 @@ static int read_config_file(const char *filename, char *config_str)
     }
 
     while ((n_read = getline(&line, &line_len, fp)) != -1) {
-        if ((line[0] == '#') || (line[0] == '\n') || (line[0] == ';'))
+        if ((line[0] == '#') || (line[0] == '\n') || line[0] == '\r' || (line[0] == ';'))
             continue;
+		current = line;
+		while (get_next_word(line, current, &begin, &end) == 0) {
+			word = (char*)realloc(word, end - begin + 1);
+			memcpy(word, begin, end - begin);
+			word[end - begin] = '\0';
+			current = end + 1;
+			printf("%s\n", word);
+		}
+		break;
         memcpy(config_str + strlen(config_str), line, n_read);
     }
     if (line)
@@ -82,37 +120,42 @@ static int read_config_file(const char *filename, char *config_str)
     return 0;
 }
 
-static Json::Value load_config_to_json(char *filename)
+static void load_config_to_json(char *filename, Json::Value &config)
 {
-    Json::Value config;
+    Json::CharReaderBuilder builder;
+    Json::CharReader *reader(builder.newCharReader());
+	Json::Value local_config;
+	Json::StyledWriter writer;
+    string errs;
     struct stat st;
     char *content = NULL;
-    char *p1, *p2, *p3, *current, *opt, *arg, *head, *tail;
+    char *p1, *p2, *p3, *p4, *current, *opt, *arg, *head, *tail;
     char tmp1[512], tmp2[512];
     size_t filesize;
 
     config.clear();
+	local_config.clear();
 
     if (!filename) {
         fprintf(stderr, "filename is NULL.\n");
-        goto out;
+        return;
     }
 
     if (stat(filename, &st) < 0) {
         printf("stat file %s failed.\n", filename);
-        goto out;
+        return;
     }
 
     filesize = st.st_size;
     if (filesize == 0) {
         printf("empty config file: %s.\n", filename);
-        goto out;
+        return;
     }
 
     content = (char*)calloc(filesize + 1, 1);
     if (!content) {
-        printf("alloc config buffer failed.\n");
-        goto out;
+        printf("alloc content buffer failed.\n");
+        return;
     }
 
     if (read_config_file(filename, content) < 0)
@@ -120,6 +163,47 @@ static Json::Value load_config_to_json(char *filename)
 
     if (strlen(content) == 0) {
         printf("content length is 0.\n");
+        goto out;
+    }
+
+	p1 = content;
+	while (1) {
+		p2 = index(p1, ' ');
+		p3 = index(p1, '#');
+		while (isblank(*p2) || *p2 == '\n')
+			p2++;
+		p4 = index(p1, '\n');
+		if (p2 && p4) {
+			if (p2 > p4) {
+				*p4 = '\0';
+				local_config["cmd"].append((string)p1);
+			} else {
+			}
+		} else if (!p2 && !p4) {
+			local_config["cmd"].append((string)p1);
+			break;
+		} else if (p2) {
+		} else if (p4) {
+			*p4 = '\0';
+			local_config["cmd"].append((string)p1);
+		}
+		if (!p2 || (p2 > p4)) {
+			*p4 = '\0';
+			local_config["cmd"].append((string)p1);
+		} else {
+		}
+		p1 = p4 + 1;
+		while (isblank(*p1))
+			p1++;
+		if ((p1 - content + 1) > strlen(content))
+			break;
+	}
+	config.copy(local_config);
+	printf("%s", writer.write(g_config).c_str());
+/*
+    if (!reader->parse(content, content + strlen(content), &config, &errs)) {
+        printf("parse json failed: %s\n", errs.c_str());
+		config.clear();
         goto out;
     }
 
@@ -197,12 +281,10 @@ static Json::Value load_config_to_json(char *filename)
         current[-1] = '}';
     else
         current[0] = '}';
-
+*/
 out:
     if (content)
         free(content);
-
-    return config;
 }
 
 static void read_cb(struct bufferevent *bev, void *user_data)
@@ -405,12 +487,12 @@ int main(int argc, char **argv)
     }
 
     if (!filename) {
-        printf("specify config filename use -f.\n");
+        printf("specify config filename use -c.\n");
         return 1;
     }
 
-    config = load_config_to_json(filename);
-    if (config.empty()) {
+    load_config_to_json(filename, g_config);
+    if (g_config.empty()) {
         printf("Convert config to json format failed.\n");
         return 1;
     }
