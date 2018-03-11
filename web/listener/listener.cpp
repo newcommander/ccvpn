@@ -6,6 +6,7 @@
 #include <string.h>
 #include <strings.h>
 #include <errno.h>
+#include <ctype.h>
 
 #include <event2/bufferevent.h>
 #include <event2/bufferevent_struct.h>
@@ -25,7 +26,6 @@
 using namespace std;
 
 static char active_addr[128];
-static char directive_holder[CONFIG_BUF_LEN * 2];
 static char config_json[CONFIG_BUF_LEN * 2];
 
 static vector<char*> direct_cmd;
@@ -58,37 +58,95 @@ static int config_to_jsoncpp(char *content)
 }
 */
 
-static int get_next_word(char *line, char *current, char **begin, char **end)
+// return next begin
+static char* get_next_word(char *line_begin, char *line_end, char *word_buf, int max_buf_len)
 {
-	if (!line) {
-		*begin = NULL;
-		*end = NULL;
-		return -1;
-	}
+    char *begin, *end, *next_begin;
+    int word_len;
 
-	while (isblank(*current))
-		current++;
-	if ((current == line + strlen(line)) || (*current == '#'))
-		goto failed;
+    if (!word_buf || max_buf_len <= 0)
+        return NULL;
+    memset(word_buf, 0, max_buf_len);
 
-	*begin = current;
-	while (!isblank(*current))
-		current++;
-	*end = current;
+    if (!line_begin || !line_end || (line_begin >= line_end))
+        return NULL;
 
-	return 0;
+    begin = line_begin;
+    while (!isgraph(*begin) || *begin == '"') {
+        begin++;
+        if (begin >= line_end)
+            return NULL;
+    }
+    if (*begin == '#')
+        return NULL;
 
-failed:
-	*begin = line + strlen(line);
-	*end = *begin;
-	return -1;
+    end = begin;
+    while (isgraph(*end) && *end != '"')
+        end++;
+
+    word_len = (end - begin) > (max_buf_len - 1) ? (max_buf_len - 1) : (end - begin);
+    memcpy(word_buf, begin, word_len);
+    word_buf[word_len] = '\0';
+
+    next_begin = end;
+    while (!isgraph(*next_begin)) {
+        next_begin++;
+        if (next_begin >= line_end)
+            return NULL;
+    }
+    if (*next_begin == '#')
+        return NULL;
+
+    return next_begin;
 }
 
-static int read_config_file(const char *filename, char *config_str)
+static int handle_push(char *line, char *line_end, char *word_buf, int max_buf_len)
 {
+    Json::Value value;
+    char *begin = line;
+
+    begin = get_next_word(begin, line_end, word_buf, max_buf_len);
+    if (!strncmp(word_buf, "route", 5)) {
+        value.clear();
+        if (!begin) {
+            printf("error format: push route\n");
+            return -1;
+        }
+        begin = get_next_word(begin, line_end, word_buf, max_buf_len);
+        value["subnet"] = word_buf;
+        if (!begin) {
+            printf("error format: push route\n");
+            return -1;
+        }
+        get_next_word(begin, line_end, word_buf, max_buf_len);
+        value["netmask"] = word_buf;
+        g_config["push"]["route"].append(value);
+    } else if (!strncmp(word_buf, "dhcp-option", 11)) {
+        begin = get_next_word(begin, line_end, word_buf, max_buf_len);
+        if (!strncmp(word_buf, "DNS", 3)) {
+            if (!begin) {
+                printf("error format: push dhcp-option DNS\n");
+                return -1;
+            }
+            if (g_config["push"]["dhcp-option"]["DNS"].size() >= 2) {
+                printf("push too many DNS server\n");
+                return -1;
+            }
+            get_next_word(begin, line_end, word_buf, max_buf_len);
+            g_config["push"]["dhcp-option"]["DNS"].append(word_buf);
+        }
+    }
+
+    return 0;
+}
+
+static int read_config_file(const char *filename)
+{
+    Json::StyledWriter styledwriter;
+    Json::Value value;
     FILE *fp = NULL;
-    char *line = NULL, *current = NULL;
-	char *begin, *end, *word = NULL;
+    char word[512], *line = NULL, *line_end, *begin;
+    int ret;
     size_t line_len;
     ssize_t n_read;
 
@@ -101,31 +159,134 @@ static int read_config_file(const char *filename, char *config_str)
     while ((n_read = getline(&line, &line_len, fp)) != -1) {
         if ((line[0] == '#') || (line[0] == '\n') || line[0] == '\r' || (line[0] == ';'))
             continue;
-		current = line;
-		while (get_next_word(line, current, &begin, &end) == 0) {
-			word = (char*)realloc(word, end - begin + 1);
-			memcpy(word, begin, end - begin);
-			word[end - begin] = '\0';
-			current = end + 1;
-			printf("%s\n", word);
-		}
-		break;
-        memcpy(config_str + strlen(config_str), line, n_read);
+        line_end = line + n_read - 1;
+        begin = get_next_word(line, line_end, word, 512);
+        if (!strncmp(word, "management", 10)) {
+            begin = get_next_word(begin, line_end, word, 512);
+            if (!begin) {
+                printf("get management address failed.\n");
+                ret = -1;
+                goto out;
+            }
+            g_config["management"]["address"] = word;
+            get_next_word(begin, line_end, word, 512);
+            g_config["management"]["port"] = word;
+        } else if (!strncmp(word, "daemon", 6)) {
+            g_config["cmd"].append(word);
+        } else if (!strncmp(word, "askpass", 7)) {
+            g_config["cmd"].append(word);
+        } else if (!strncmp(word, "port", 4)) {
+            get_next_word(begin, line_end, word, 512);
+            g_config["port"] = word;
+        } else if (!strncmp(word, "proto", 5)) {
+            get_next_word(begin, line_end, word, 512);
+            g_config["proto"] = word;
+        } else if (!strncmp(word, "dev", 3)) {
+            get_next_word(begin, line_end, word, 512);
+            g_config["dev"] = word;
+        } else if (!strncmp(word, "ca", 2)) {
+            get_next_word(begin, line_end, word, 512);
+            g_config["ca"] = word;
+        } else if (!strncmp(word, "cert", 4)) {
+            get_next_word(begin, line_end, word, 512);
+            g_config["cert"] = word;
+        } else if (!strncmp(word, "key", 3)) {
+            get_next_word(begin, line_end, word, 512);
+            g_config["key"] = word;
+        } else if (!strncmp(word, "dh", 2)) {
+            get_next_word(begin, line_end, word, 512);
+            g_config["dh"] = word;
+        } else if (!strncmp(word, "server", 6)) {
+            begin = get_next_word(begin, line_end, word, 512);
+            g_config["server"]["subnet"] = word;
+            if (!begin) {
+                printf("error format: server\n");
+                ret = 1;
+                goto out;
+            }
+            get_next_word(begin, line_end, word, 512);
+            g_config["server"]["netmask"] = word;
+        } else if (!strncmp(word, "ifconfig-pool-persist", 21)) {
+            get_next_word(begin, line_end, word, 512);
+            g_config["ifconfig-pool-persist"] = word;
+        } else if (!strncmp(word, "push", 4)) {
+            if (handle_push(begin, line_end, word, 512) < 0) {
+                ret = 1;
+                goto out;
+            }
+        } else if (!strncmp(word, "client-config-dir", 17)) {
+            get_next_word(begin, line_end, word, 512);
+            g_config["client-config-dir"] = word;
+        } else if (!strncmp(word, "route", 5)) {
+            value.clear();
+            begin = get_next_word(begin, line_end, word, 512);
+            value["subnet"] = word;
+            if (!begin) {
+                printf("error format: route\n");
+                ret = 1;
+                goto out;
+            }
+            get_next_word(begin, line_end, word, 512);
+            value["netmask"] = word;
+            g_config["route"].append(value);
+            // TODO
+        } else if (!strncmp(word, "client-to-client", 16)) {
+            g_config["cmd"].append(word);
+        } else if (!strncmp(word, "keepalive", 9)) {
+            begin = get_next_word(begin, line_end, word, 512);
+            g_config["keepalive"]["interval"] = word;
+            if (!begin) {
+                printf("error format: keepalive\n");
+                ret = 1;
+                goto out;
+            }
+            get_next_word(begin, line_end, word, 512);
+            g_config["keepalive"]["timeout"] = word;
+        } else if (!strncmp(word, "cipher", 6)) {
+            get_next_word(begin, line_end, word, 512);
+            g_config["cipher"] = word;
+        } else if (!strncmp(word, "persist-key", 11)) {
+            g_config["cmd"].append(word);
+        } else if (!strncmp(word, "persist-tun", 11)) {
+            g_config["cmd"].append(word);
+        } else if (!strncmp(word, "status", 6)) {
+            get_next_word(begin, line_end, word, 512);
+            g_config["status"] = word;
+        } else if (!strncmp(word, "log-append", 10)) {
+            get_next_word(begin, line_end, word, 512);
+            g_config["log-append"] = word;
+        } else if (!strncmp(word, "verb", 4)) {
+            get_next_word(begin, line_end, word, 512);
+            g_config["verb"] = word;
+        } else {
+            printf("unknow directive: %s\n", word);
+            ret = -1;
+            goto out;
+        }
     }
+
+    ret = 0;
+out:
     if (line)
         free(line);
 
     fclose(fp);
 
-    return 0;
+    printf("%s", styledwriter.write(g_config).c_str());
+
+    if (ret)
+        g_config.clear();
+
+    return ret;
 }
 
+#if 0
 static void load_config_to_json(char *filename, Json::Value &config)
 {
     Json::CharReaderBuilder builder;
     Json::CharReader *reader(builder.newCharReader());
-	Json::Value local_config;
-	Json::StyledWriter writer;
+    Json::Value local_config;
+    Json::StyledWriter writer;
     string errs;
     struct stat st;
     char *content = NULL;
@@ -134,7 +295,7 @@ static void load_config_to_json(char *filename, Json::Value &config)
     size_t filesize;
 
     config.clear();
-	local_config.clear();
+    local_config.clear();
 
     if (!filename) {
         fprintf(stderr, "filename is NULL.\n");
@@ -158,52 +319,52 @@ static void load_config_to_json(char *filename, Json::Value &config)
         return;
     }
 
-    if (read_config_file(filename, content) < 0)
-        goto out;
+//    if (read_config_file(filename, content) < 0)
+//        goto out;
 
     if (strlen(content) == 0) {
         printf("content length is 0.\n");
         goto out;
     }
 
-	p1 = content;
-	while (1) {
-		p2 = index(p1, ' ');
-		p3 = index(p1, '#');
-		while (isblank(*p2) || *p2 == '\n')
-			p2++;
-		p4 = index(p1, '\n');
-		if (p2 && p4) {
-			if (p2 > p4) {
-				*p4 = '\0';
-				local_config["cmd"].append((string)p1);
-			} else {
-			}
-		} else if (!p2 && !p4) {
-			local_config["cmd"].append((string)p1);
-			break;
-		} else if (p2) {
-		} else if (p4) {
-			*p4 = '\0';
-			local_config["cmd"].append((string)p1);
-		}
-		if (!p2 || (p2 > p4)) {
-			*p4 = '\0';
-			local_config["cmd"].append((string)p1);
-		} else {
-		}
-		p1 = p4 + 1;
-		while (isblank(*p1))
-			p1++;
-		if ((p1 - content + 1) > strlen(content))
-			break;
-	}
-	config.copy(local_config);
-	printf("%s", writer.write(g_config).c_str());
+    p1 = content;
+    while (1) {
+        p2 = index(p1, ' ');
+        p3 = index(p1, '#');
+        while (isblank(*p2) || *p2 == '\n')
+            p2++;
+        p4 = index(p1, '\n');
+        if (p2 && p4) {
+            if (p2 > p4) {
+                *p4 = '\0';
+                local_config["cmd"].append((string)p1);
+            } else {
+            }
+        } else if (!p2 && !p4) {
+            local_config["cmd"].append((string)p1);
+            break;
+        } else if (p2) {
+        } else if (p4) {
+            *p4 = '\0';
+            local_config["cmd"].append((string)p1);
+        }
+        if (!p2 || (p2 > p4)) {
+            *p4 = '\0';
+            local_config["cmd"].append((string)p1);
+        } else {
+        }
+        p1 = p4 + 1;
+        while (isblank(*p1))
+            p1++;
+        if ((p1 - content + 1) > strlen(content))
+            break;
+    }
+    config.copy(local_config);
+    printf("%s", writer.write(g_config).c_str());
 /*
     if (!reader->parse(content, content + strlen(content), &config, &errs)) {
         printf("parse json failed: %s\n", errs.c_str());
-		config.clear();
+        config.clear();
         goto out;
     }
 
@@ -286,6 +447,7 @@ out:
     if (content)
         free(content);
 }
+#endif
 
 static void read_cb(struct bufferevent *bev, void *user_data)
 {
@@ -491,11 +653,14 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    read_config_file(filename);
+    /*
     load_config_to_json(filename, g_config);
     if (g_config.empty()) {
         printf("Convert config to json format failed.\n");
         return 1;
     }
+    */
 
     memset(active_addr, 0, sizeof(active_addr));
     if (get_active_address(nic_name, active_addr, sizeof(active_addr) - 1) < 0)
