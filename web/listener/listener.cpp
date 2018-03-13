@@ -140,6 +140,65 @@ static int handle_push(char *line, char *line_end, char *word_buf, int max_buf_l
     return 0;
 }
 
+static int write_config_file(const char *filename)
+{
+    Json::Value::Members members;
+    string config_str = "";
+    size_t i;
+    int j;
+
+    members = g_config.getMemberNames();
+    for (i = 0; i < members.size(); i++) {
+        if (members[i] == "ca" ||
+            members[i] == "cert" ||
+            members[i] == "key" ||
+            members[i] == "cipher" ||
+            members[i] == "client-config-dir" ||
+            members[i] == "dev" ||
+            members[i] == "dh" ||
+            members[i] == "ifconfig-pool-persist" ||
+            members[i] == "log-append" ||
+            members[i] == "port" ||
+            members[i] == "proto" ||
+            members[i] == "status" ||
+            members[i] == "verb") {
+
+            config_str += members[i] + " " + g_config[members[i]].asString() + "\n";
+        } else if (members[i] == "cmd") {
+            if (!g_config[members[i]].isArray()) {
+                printf("error format: cmd not array.\n");
+                return -1;
+            }
+            for (j = 0; j < (int)g_config[members[i]].size(); j++)
+                config_str += g_config[members[i]][j].asString() + "\n";
+        } else if (members[i] == "keepalive") {
+            if (!g_config[members[i]].isMember("interval") || !g_config[members[i]].isMember("timeout")) {
+                printf("error format: keepalive\n");
+                return -1;
+            }
+            config_str += members[i] + " " + g_config[members[i]]["interval"].asString() + " " + g_config[members[i]]["timeout"].asString() + "\n";
+        } else if (members[i] == "management") {
+            if (!g_config[members[i]].isMember("address") || !g_config[members[i]].isMember("port")) {
+                printf("error format: management\n");
+                return -1;
+            }
+            config_str += members[i] + " " + g_config[members[i]]["address"].asString() + " " + g_config[members[i]]["port"].asString() + "\n";
+        } else if (members[i] == "server") {
+            if (!g_config[members[i]].isMember("subnet") || !g_config[members[i]].isMember("netmask")) {
+                printf("error format: server\n");
+                return -1;
+            }
+            config_str += members[i] + " " + g_config[members[i]]["subnet"].asString() + " " + g_config[members[i]]["netmask"].asString() + "\n";
+        } else if (members[i] == "route") {
+        } else if (members[i] == "push") {
+        } else if (members[i] == "additional") {
+        }
+    }
+    printf("%s", config_str.c_str());
+
+    return 0;
+}
+
 static int read_config_file(const char *filename)
 {
     Json::StyledWriter styledwriter;
@@ -273,6 +332,7 @@ out:
     fclose(fp);
 
     printf("%s", styledwriter.write(g_config).c_str());
+    write_config_file("json_output");
 
     if (ret)
         g_config.clear();
