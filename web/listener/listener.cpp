@@ -190,6 +190,17 @@ static int write_config_file(const char *filename)
             }
             config_str += members[i] + " " + g_config[members[i]]["subnet"].asString() + " " + g_config[members[i]]["netmask"].asString() + "\n";
         } else if (members[i] == "route") {
+            if (!g_config[members[i]].isArray()) {
+                printf("error format: route not array.\n");
+                return -1;
+            }
+            for (j = 0; j < (int)g_config[members[i]].size(); j++) {
+                if (!g_config[members[i]][j].isMember("subnet") || !g_config[members[i]][j].isMember("netmask")) {
+                    printf("error format: route item.\n");
+                    return -1;
+                }
+                config_str += members[i] + " " + g_config[members[i]][j]["subnet"].asString() + " " + g_config[members[i]][j]["netmask"].asString() + "\n";
+            }
         } else if (members[i] == "push") {
         } else if (members[i] == "additional") {
         }
