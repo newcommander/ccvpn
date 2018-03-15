@@ -142,10 +142,11 @@ static int handle_push(char *line, char *line_end, char *word_buf, int max_buf_l
 
 static int write_config_file(const char *filename)
 {
-    Json::Value::Members members;
+    Json::Value::Members members, push_members, push_dhcp_members;
+    Json::Value cmd, route, push, push_dhcp, push_dhcp_dns, push_route;
     string config_str = "";
     size_t i;
-    int j;
+    int ii, jj;
 
     members = g_config.getMemberNames();
     for (i = 0; i < members.size(); i++) {
@@ -165,12 +166,13 @@ static int write_config_file(const char *filename)
 
             config_str += members[i] + " " + g_config[members[i]].asString() + "\n";
         } else if (members[i] == "cmd") {
-            if (!g_config[members[i]].isArray()) {
+            cmd = g_config[members[i]];
+            if (!cmd.isArray()) {
                 printf("error format: cmd not array.\n");
                 return -1;
             }
-            for (j = 0; j < (int)g_config[members[i]].size(); j++)
-                config_str += g_config[members[i]][j].asString() + "\n";
+            for (ii = 0; ii < (int)cmd.size(); ii++)
+                config_str += cmd[ii].asString() + "\n";
         } else if (members[i] == "keepalive") {
             if (!g_config[members[i]].isMember("interval") || !g_config[members[i]].isMember("timeout")) {
                 printf("error format: keepalive\n");
@@ -190,18 +192,51 @@ static int write_config_file(const char *filename)
             }
             config_str += members[i] + " " + g_config[members[i]]["subnet"].asString() + " " + g_config[members[i]]["netmask"].asString() + "\n";
         } else if (members[i] == "route") {
-            if (!g_config[members[i]].isArray()) {
+            route = g_config[members[i]];
+            if (!route.isArray()) {
                 printf("error format: route not array.\n");
                 return -1;
             }
-            for (j = 0; j < (int)g_config[members[i]].size(); j++) {
-                if (!g_config[members[i]][j].isMember("subnet") || !g_config[members[i]][j].isMember("netmask")) {
+            for (ii = 0; ii < (int)route.size(); ii++) {
+                if (!route[ii].isMember("subnet") || !route[ii].isMember("netmask")) {
                     printf("error format: route item.\n");
                     return -1;
                 }
-                config_str += members[i] + " " + g_config[members[i]][j]["subnet"].asString() + " " + g_config[members[i]][j]["netmask"].asString() + "\n";
+                config_str += members[i] + " " + route[ii]["subnet"].asString() + " " + route[ii]["netmask"].asString() + "\n";
             }
         } else if (members[i] == "push") {
+            push = g_config[members[i]];
+            push_members = push.getMemberNames();
+            for (ii = 0; ii < (int)push_members.size(); ii++) {
+                if (push_members[ii] == "dhcp-option") {
+                    push_dhcp = push[push_members[ii]];
+                    push_dhcp_members = push_dhcp.getMemberNames();
+                    for (jj = 0; jj < (int)push_dhcp_members.size(); jj++) {
+                        if (push_dhcp_members[jj] == "DNS") {
+                            push_dhcp_dns = push_dhcp[push_dhcp_members[jj]];
+                            if (!push_dhcp_dns.isArray()) {
+                                printf("error format: push dhcp dns is not an array.\n");
+                                return -1;
+                            }
+                            config_str += members[i] + " \"" + push_members[ii] + " " + push_dhcp_members[jj] + " " + push_dhcp_dns[0].asString() + "\"\n";
+                            config_str += members[i] + " \"" + push_members[ii] + " " + push_dhcp_members[jj] + " " + push_dhcp_dns[1].asString() + "\"\n";
+                        }
+                    }
+                } else if (push_members[ii] == "route") {
+                    push_route = push[push_members[ii]];
+                    if (!push_route.isArray()) {
+                        printf("error format: push route is not an array.\n");
+                        return -1;
+                    }
+                    for (jj = 0; jj < (int)push_route.size(); jj++) {
+                        if (!push_route[jj].isMember("subnet") || !push_route[jj].isMember("netmask")) {
+                            printf("error format: push route item.\n");
+                            return -1;
+                        }
+                        config_str += members[i] + " \"" + push_members[ii] + " " + push_route[jj]["subnet"].asString() + " " + push_route[jj]["netmask"].asString() + "\"\n";
+                    }
+                }
+            }
         } else if (members[i] == "additional") {
         }
     }
