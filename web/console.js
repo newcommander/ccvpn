@@ -23,7 +23,7 @@ var main = new Vue({
             this.num += 1;
         },
         update_config: function (data, status) {
-            config = $.parseJSON(data);
+            config = data;
             this.$refs.deamon_mode.checkStatus = true;  //TODO
             this.$refs.ask_passwd.checkStatus = true;  //TODO
             this.$refs.client_2_client.checkStatus = true;  //TODO
