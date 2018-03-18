@@ -56,6 +56,44 @@ body {
     width: 100%;
     padding: 10px 10px;
 }
+.content-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 10px 0px;
+}
+.content-l {
+    border-right: 1px solid #999999;
+    width: 50%;
+    height: auto;
+    padding: 10px 10px;
+}
+.content-r {
+    width: 50%;
+    height: auto;
+    padding: 10px 10px;
+}
+.content-item {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 10px 10px;
+    border-bottom: 1px solid #CECECE;
+}
+.content-item-base {
+    width: 100%;
+    height: auto;
+}
+.content-item-title {
+    display: inline-block;
+}
+.content-item-switch {
+    float: right;
+}
+.content-item-text {
+    display: block;
+    width: 70%;
+}
 .content-left {
     display: block;
     width: 100%;

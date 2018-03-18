@@ -63,13 +63,69 @@
                             <at-button @click="reset_click" type="primary" size="large">Reset</at-button>
                             <at-button @click="save_click" type="primary" size="large">Save</at-button>
                         </div>
+                        <div class="content-container">
+                            <div class="content-l">
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Deamon mode</h4>
+                                        </div>
+                                        <div class="content-item-switch">
+                                            <at-switch ref="deamon_mode" size="large">
+                                                <span slot="checkedText">ON</span>
+                                                <span slot="unCheckedText">OFF</span>
+                                            </at-switch size="large">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Client to Client</h4>
+                                        </div>
+                                        <div class="content-item-switch">
+                                            <at-switch ref="client_to_client" size="large">
+                                                <span slot="checkedText">ON</span>
+                                                <span slot="unCheckedText">OFF</span>
+                                            </at-switch size="large">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Port</h4>
+                                        </div>
+                                        <div class="content-item-text" align="right">
+                                            <at-input-number ref="port" size="small" value="2346" min="1024" max="65535"></at-input-number>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="content-r">
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Ask password</h4>
+                                        </div>
+                                        <div class="content-item-switch">
+                                            <at-switch ref="ask_passwd" size="large">
+                                                <span slot="checkedText">ON</span>
+                                                <span slot="unCheckedText">OFF</span>
+                                            </at-switch size="large">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
                         <div class="row at-row no-gutter">
                             <div :class="`col-md-12`"><div class="at-box-row bg-c-brand-dark">
                                     <div class="content-left">
                                         <at-card style="width: 100%;">
                                             <h4 slot="title">Deamon mode</h4>
                                             <div slot="extra">
-                                                <at-switch ref="deamon_mode" size="large">
+                                                <at-switch ref="deamon_mode_old" size="large">
                                                     <span slot="checkedText">ON</span>
                                                     <span slot="unCheckedText">OFF</span>
                                                 </at-switch size="large">
@@ -85,7 +141,7 @@
                                         <at-card style="width: 100%;">
                                             <h4 slot="title">Ask password</h4>
                                             <div slot="extra">
-                                                <at-switch ref="ask_passwd" size="large">
+                                                <at-switch ref="ask_passwd_old" size="large">
                                                     <span slot="checkedText">ON</span>
                                                     <span slot="unCheckedText">OFF</span>
                                                 </at-switch size="large">
@@ -104,7 +160,7 @@
                                             <h4 slot="title">PORT</h4>
                                             <div slot="extra">
                                                 <div class="margin-top-10">
-                                                    <at-input-number ref="port" size="small" value="2346" min="1024" max="65535"></at-input-number>
+                                                    <at-input-number ref="port_old" size="small" value="2346" min="1024" max="65535"></at-input-number>
                                                 </div>
                                             </div>
                                             <div>
@@ -119,7 +175,7 @@
                                             <h4 slot="title">CA certificate</h4>
                                             <div slot="extra">
                                                 <div class="margin-top-10" id="capath">
-                                                   <at-input ref="ca_file" @change="change_ca_path" placeholder="/opt/openvpn/cacert.pem"></at-input>
+                                                   <at-input ref="ca_file_old" @change="change_ca_path" placeholder="/opt/openvpn/cacert.pem"></at-input>
                                                 </div>
                                             </div>
                                             <div>
@@ -136,7 +192,7 @@
                                             <h4 slot="title">Certificate</h4>
                                             <div slot="extra">
                                                 <div class="margin-top-10">
-                                                    <at-input ref="cert_file" placeholder="/opt/openvpn/server_cert.pem"></at-input>
+                                                    <at-input ref="cert_file_old" placeholder="/opt/openvpn/server_cert.pem"></at-input>
                                                 </div>
                                             </div>
                                             <div>
@@ -151,7 +207,7 @@
                                             <h4 slot="title">Private key</h4>
                                             <div slot="extra">
                                                 <div class="margin-top-10">
-                                                    <at-input ref="key_file" placeholder="/opt/openvpn/server_key.pem"></at-input>
+                                                    <at-input ref="key_file_old" placeholder="/opt/openvpn/server_key.pem"></at-input>
                                                 </div>
                                             </div>
                                             <div>
@@ -168,7 +224,7 @@
                                             <h4 slot="title">Diffie hellman</h4>
                                             <div slot="extra">
                                                 <div class="margin-top-10">
-                                                    <at-input ref="dh_file" placeholder="/opt/openvpn/dh2048.pem"></at-input>
+                                                    <at-input ref="dh_file_old" placeholder="/opt/openvpn/dh2048.pem"></at-input>
                                                 </div>
                                             </div>
                                             <div>
@@ -183,7 +239,7 @@
                                             <h4 slot="title">VPN Subnet</h4>
                                             <div slot="extra">
                                                 <div class="margin-top-10">
-                                                    <at-input ref="vpn_subnet" placeholder="10.6.0.0/24"></at-input>
+                                                    <at-input ref="vpn_subnet_old" placeholder="10.6.0.0/24"></at-input>
                                                 </div>
                                             </div>
                                             <div>
@@ -200,7 +256,7 @@
                                             <h4 slot="title">IP pool persist</h4>
                                             <div slot="extra">
                                                 <div class="margin-top-10">
-                                                    <at-input ref="ip_pool" placeholder="/opt/openvpn/ipp.txt"></at-input>
+                                                    <at-input ref="ip_pool_old" placeholder="/opt/openvpn/ipp.txt"></at-input>
                                                 </div>
                                             </div>
                                             <div>
@@ -215,7 +271,7 @@
                                             <h4 slot="title">Private subnet</h4>
                                             <div slot="extra">
                                                 <div class="margin-top-10">
-                                                    <at-input ref="private_subnet" placeholder="192.168.0.0 255.255.255.0"></at-input>
+                                                    <at-input ref="private_subnet_old" placeholder="192.168.0.0 255.255.255.0"></at-input>
                                                 </div>
                                             </div>
                                             <div>
@@ -232,7 +288,7 @@
                                             <h4 slot="title">DNS server</h4>
                                             <div slot="extra">
                                                 <div class="margin-top-10">
-                                                    <at-input ref="dns_server" placeholder="180.76.76.76"></at-input>
+                                                    <at-input ref="dns_server_old" placeholder="180.76.76.76"></at-input>
                                                 </div>
                                             </div>
                                             <div>
@@ -246,7 +302,7 @@
                                         <at-card style="width: 100%;">
                                             <h4 slot="title">Client to Client</h4>
                                             <div slot="extra">
-                                                <at-switch ref="client_2_client" size="large">
+                                                <at-switch ref="client_2_client_old" size="large">
                                                     <span slot="checkedText">ON</span>
                                                     <span slot="unCheckedText">OFF</span>
                                                 </at-switch size="large">
@@ -265,7 +321,7 @@
                                             <h4 slot="title">Status file</h4>
                                             <div slot="extra">
                                                 <div class="margin-top-10">
-                                                    <at-input ref="status_file" placeholder="/opt/openvpn/openvpn-status.log"></at-input>
+                                                    <at-input ref="status_file_old" placeholder="/opt/openvpn/openvpn-status.log"></at-input>
                                                 </div>
                                             </div>
                                             <div>
@@ -280,7 +336,7 @@
                                             <h4 slot="title">System log</h4>
                                             <div slot="extra">
                                                 <div class="margin-top-10">
-                                                    <at-input ref="sys_log" placeholder="/opt/openvpn/openvpn.log"></at-input>
+                                                    <at-input ref="sys_log_old" placeholder="/opt/openvpn/openvpn.log"></at-input>
                                                 </div>
                                             </div>
                                             <div>
