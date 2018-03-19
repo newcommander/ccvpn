@@ -24,19 +24,37 @@ var main = new Vue({
         },
         update_config: function (data, status) {
             config = data;
-            this.$refs.deamon_mode.checkStatus = true;  //TODO
-            this.$refs.ask_passwd.checkStatus = true;  //TODO
-            this.$refs.client_2_client.checkStatus = true;  //TODO
+            for (i in config.cmd) {
+                if (config.cmd[i] == "daemon")
+                    this.$refs.deamon_mode.checkStatus = true;
+                else if (config.cmd[i] == "askpass")
+                    this.$refs.ask_passwd.checkStatus = true;
+                else if (config.cmd[i] == "client_to_client")
+                    this.$refs.client_to_client.checkStatus = true;
+                else if (config.cmd[i] == "persist_key")
+                    this.$refs.persist_key.checkStatus = true;
+                else if (config.cmd[i] == "persist_tun")
+                    this.$refs.persist_tun.checkStatus = true;
+            }
             this.$refs.port.currentValue = config.port;
-            this.$refs.ca_file.currentValue = config.ca;
-            this.$refs.cert_file.currentValue = config.cert;
-            this.$refs.key_file.currentValue = config.key;
-            this.$refs.dh_file.currentValue = config.dh;
-            this.$refs.vpn_subnet.currentValue = config.server;
-            //this.$refs.ip_pool.currentValue = config.ifconfig-pool-persist;
-            this.$refs.private_subnet.currentValue = config.route;
-            this.$refs.status_file.currentValue = config.status;
-            this.$refs.sys_log.currentValue = config.log-append;
+            this.$refs.ca.currentValue = config.ca;
+            this.$refs.server_cert.currentValue = config.cert;
+            this.$refs.cipher.currentValue = config.cipher;
+            this.$refs.client_config_dir.currentValue = config.client_config_dir;
+            this.$refs.dev.currentValue = config.dev;
+            this.$refs.dh.currentValue = config.dh;
+            this.$refs.ifconfig_pool_persist.currentValue = config.ifconfig_pool_persist;
+            this.$refs.keepalive_interval.currentValue = config.keepalive.interval;
+            this.$refs.keepalive_timeout.currentValue = config.keepalive.timeout;
+            this.$refs.key.currentValue = config.key;
+            this.$refs.log_append.currentValue = config.log_append;
+            this.$refs.management_address.currentValue = config.management.address;
+            this.$refs.management_port.currentValue = config.management.port;
+            this.$refs.proto.currentValue = config.proto;
+            this.$refs.server_subnet.currentValue = config.server.subnet;
+            this.$refs.server_netmask.currentValue = config.server.netmask;
+            this.$refs.status.currentValue = config.status;
+            this.$refs.verb.currentValue = config.verb;
         },
         reload_click: function () {
             var lala = '{"op":"reload"}';

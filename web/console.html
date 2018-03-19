@@ -96,8 +96,120 @@
                                         <div class="content-item-title">
                                             <h4>Port</h4>
                                         </div>
-                                        <div class="content-item-text" align="right">
+                                        <div class="content-item-text">
                                             <at-input-number ref="port" size="small" value="2346" min="1024" max="65535"></at-input-number>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>CA</h4>
+                                        </div>
+                                        <div class="content-item-text">
+                                            <at-input ref="ca" placeholder="none"></at-input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Server Cert</h4>
+                                        </div>
+                                        <div class="content-item-text">
+                                            <at-input ref="server_cert" placeholder="none"></at-input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Cipher</h4>
+                                        </div>
+                                        <div class="content-item-text">
+                                            <at-input ref="cipher" placeholder="none"></at-input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Client configuration directroy</h4>
+                                        </div>
+                                        <div class="content-item-text">
+                                            <at-input ref="client_config_dir" placeholder="none"></at-input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Device type</h4>
+                                        </div>
+                                        <div class="content-item-text">
+                                            <at-input ref="dev" placeholder="none"></at-input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Diffie Hellman parameters</h4>
+                                        </div>
+                                        <div class="content-item-text">
+                                            <at-input ref="dh" placeholder="none"></at-input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>ifconfig-pool-persist</h4>
+                                        </div>
+                                        <div class="content-item-text">
+                                            <at-input ref="ifconfig_pool_persist" placeholder="none"></at-input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Keep alive</h4>
+                                        </div>
+                                        <div class="content-item-text">
+                                            <at-input ref="keepalive_interval" placeholder="0"></at-input>
+                                            <at-input ref="keepalive_timeout" placeholder="0"></at-input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Key</h4>
+                                        </div>
+                                        <div class="content-item-text">
+                                            <at-input ref="key" placeholder="none"></at-input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Log append</h4>
+                                        </div>
+                                        <div class="content-item-text">
+                                            <at-input ref="log_append" placeholder="none"></at-input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Management</h4>
+                                        </div>
+                                        <div class="content-item-text">
+                                            <at-input ref="management_address" placeholder="0.0.0.0"></at-input>
+                                            <at-input ref="management_port" placeholder="0"></at-input>
                                         </div>
                                     </div>
                                 </div>
@@ -113,6 +225,104 @@
                                                 <span slot="checkedText">ON</span>
                                                 <span slot="unCheckedText">OFF</span>
                                             </at-switch size="large">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Persist key</h4>
+                                        </div>
+                                        <div class="content-item-switch">
+                                            <at-switch ref="persist_key" size="large">
+                                                <span slot="checkedText">ON</span>
+                                                <span slot="unCheckedText">OFF</span>
+                                            </at-switch size="large">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Persist tun</h4>
+                                        </div>
+                                        <div class="content-item-switch">
+                                            <at-switch ref="persist_tun" size="large">
+                                                <span slot="checkedText">ON</span>
+                                                <span slot="unCheckedText">OFF</span>
+                                            </at-switch size="large">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Protocol</h4>
+                                        </div>
+                                        <div class="content-item-text">
+                                            <at-input ref="proto" placeholder="none"></at-input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>push</h4>
+                                        </div>
+                                        <div class="content-item-text">
+                                            .........
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Route</h4>
+                                        </div>
+                                        <div class="content-item-text">
+                                            .........
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Server</h4>
+                                        </div>
+                                        <div class="content-item-text">
+                                            <at-input ref="server_subnet" placeholder="none"></at-input>
+                                            <at-input ref="server_netmask" placeholder="none"></at-input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Status</h4>
+                                        </div>
+                                        <div class="content-item-text">
+                                            <at-input ref="status" placeholder="none"></at-input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Verbosity</h4>
+                                        </div>
+                                        <div class="content-item-text">
+                                            <at-slider v-model="value" :min="0" :max="11"></at-slider>
+                                            <at-input ref="verb" placeholder="0"></at-input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content-item">
+                                    <div class="content-item-base">
+                                        <div class="content-item-title">
+                                            <h4>Additional</h4>
+                                        </div>
+                                        <div class="content-item-text">
+                                            <at-input ref="additional" placeholder="0"></at-input>
                                         </div>
                                     </div>
                                 </div>

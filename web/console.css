@@ -79,19 +79,19 @@ body {
     flex-wrap: wrap;
     padding: 10px 10px;
     border-bottom: 1px solid #CECECE;
+    height: auto;
 }
 .content-item-base {
     width: 100%;
-    height: auto;
 }
 .content-item-title {
-    display: inline-block;
+    display: block;
 }
 .content-item-switch {
     float: right;
 }
 .content-item-text {
-    display: block;
+    float: right;
     width: 70%;
 }
 .content-left {

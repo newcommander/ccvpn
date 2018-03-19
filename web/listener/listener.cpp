@@ -107,12 +107,12 @@ static int handle_push(Json::Value &config, char *line, char *line_end, char *wo
                 printf("error format: push dhcp-option DNS\n");
                 return -1;
             }
-            if (config["push"]["dhcp-option"]["DNS"].size() >= 2) {
+            if (config["push"]["dhcp_option"]["DNS"].size() >= 2) {
                 printf("push too many DNS server\n");
                 return -1;
             }
             get_next_word(begin, line_end, word_buf, max_buf_len);
-            config["push"]["dhcp-option"]["DNS"].append(word_buf);
+            config["push"]["dhcp_option"]["DNS"].append(word_buf);
         }
     }
 
@@ -134,25 +134,36 @@ static int write_json_to_file(Json::Value &config, const string filename)
             members[i] == "cert" ||
             members[i] == "key" ||
             members[i] == "cipher" ||
-            members[i] == "client-config-dir" ||
             members[i] == "dev" ||
             members[i] == "dh" ||
-            members[i] == "ifconfig-pool-persist" ||
-            members[i] == "log-append" ||
             members[i] == "port" ||
             members[i] == "proto" ||
             members[i] == "status" ||
             members[i] == "verb") {
 
             config_str += members[i] + " " + config[members[i]].asString() + "\n";
+        } else if (members[i] == "client_config_dir") {
+            config_str += "client-config-dir " + config[members[i]].asString() + "\n";
+        } else if (members[i] == "ifconfig_pool_persist") {
+            config_str += "ifconfig-pool-persist " + config[members[i]].asString() + "\n";
+        } else if (members[i] == "log_append") {
+            config_str += "log-append " + config[members[i]].asString() + "\n";
         } else if (members[i] == "cmd") {
             cmd = config[members[i]];
             if (!cmd.isArray()) {
                 printf("error format: cmd not array.\n");
                 return -1;
             }
-            for (ii = 0; ii < (int)cmd.size(); ii++)
-                config_str += cmd[ii].asString() + "\n";
+            for (ii = 0; ii < (int)cmd.size(); ii++) {
+                if (cmd[ii] == "persist_tun")
+                    config_str += "persist-tun\n";
+                else if (cmd[ii] == "persist_key")
+                    config_str += "persist-key\n";
+                else if (cmd[ii] == "client_to_client")
+                    config_str += "client-to-client\n";
+                else
+                    config_str += cmd[ii].asString() + "\n";
+            }
         } else if (members[i] == "keepalive") {
             if (!config[members[i]].isMember("interval") || !config[members[i]].isMember("timeout")) {
                 printf("error format: keepalive\n");
@@ -188,7 +199,7 @@ static int write_json_to_file(Json::Value &config, const string filename)
             push = config[members[i]];
             push_members = push.getMemberNames();
             for (ii = 0; ii < (int)push_members.size(); ii++) {
-                if (push_members[ii] == "dhcp-option") {
+                if (push_members[ii] == "dhcp_option") {
                     push_dhcp = push[push_members[ii]];
                     push_dhcp_members = push_dhcp.getMemberNames();
                     for (jj = 0; jj < (int)push_dhcp_members.size(); jj++) {
@@ -198,8 +209,8 @@ static int write_json_to_file(Json::Value &config, const string filename)
                                 printf("error format: push dhcp dns is not an array.\n");
                                 return -1;
                             }
-                            config_str += members[i] + " \"" + push_members[ii] + " " + push_dhcp_members[jj] + " " + push_dhcp_dns[0].asString() + "\"\n";
-                            config_str += members[i] + " \"" + push_members[ii] + " " + push_dhcp_members[jj] + " " + push_dhcp_dns[1].asString() + "\"\n";
+                            config_str += members[i] + " \"" + "dhcp-option " + push_dhcp_members[jj] + " " + push_dhcp_dns[0].asString() + "\"\n";
+                            config_str += members[i] + " \"" + "dhcp-option " + push_dhcp_members[jj] + " " + push_dhcp_dns[1].asString() + "\"\n";
                         }
                     }
                 } else if (push_members[ii] == "route") {
@@ -238,6 +249,7 @@ static int write_json_to_file(Json::Value &config, const string filename)
 static int reload_config_to_json(const string filename, Json::Value &config)
 {
     Json::FastWriter fastwriter;
+    Json::StyledWriter styledwriter;
     Json::Value value;
     struct stat st;
     FILE *fp = NULL;
@@ -310,7 +322,7 @@ static int reload_config_to_json(const string filename, Json::Value &config)
             config["server"]["netmask"] = word;
         } else if (!strncmp(word, "ifconfig-pool-persist", 21)) {
             get_next_word(begin, line_end, word, 512);
-            config["ifconfig-pool-persist"] = word;
+            config["ifconfig_pool_persist"] = word;
         } else if (!strncmp(word, "push", 4)) {
             if (handle_push(config, begin, line_end, word, 512) < 0) {
                 ret = -1;
@@ -318,7 +330,7 @@ static int reload_config_to_json(const string filename, Json::Value &config)
             }
         } else if (!strncmp(word, "client-config-dir", 17)) {
             get_next_word(begin, line_end, word, 512);
-            config["client-config-dir"] = word;
+            config["client_config_dir"] = word;
         } else if (!strncmp(word, "route", 5)) {
             value.clear();
             begin = get_next_word(begin, line_end, word, 512);
@@ -332,7 +344,7 @@ static int reload_config_to_json(const string filename, Json::Value &config)
             value["netmask"] = word;
             config["route"].append(value);
         } else if (!strncmp(word, "client-to-client", 16)) {
-            config["cmd"].append(word);
+            config["cmd"].append("client_to_client");
         } else if (!strncmp(word, "keepalive", 9)) {
             begin = get_next_word(begin, line_end, word, 512);
             config["keepalive"]["interval"] = word;
@@ -347,15 +359,15 @@ static int reload_config_to_json(const string filename, Json::Value &config)
             get_next_word(begin, line_end, word, 512);
             config["cipher"] = word;
         } else if (!strncmp(word, "persist-key", 11)) {
-            config["cmd"].append(word);
+            config["cmd"].append("persist_key");
         } else if (!strncmp(word, "persist-tun", 11)) {
-            config["cmd"].append(word);
+            config["cmd"].append("persist_tun");
         } else if (!strncmp(word, "status", 6)) {
             get_next_word(begin, line_end, word, 512);
             config["status"] = word;
         } else if (!strncmp(word, "log-append", 10)) {
             get_next_word(begin, line_end, word, 512);
-            config["log-append"] = word;
+            config["log_append"] = word;
         } else if (!strncmp(word, "verb", 4)) {
             get_next_word(begin, line_end, word, 512);
             config["verb"] = word;
@@ -374,6 +386,7 @@ out:
     fclose(fp);
 
     config_string = fastwriter.write(config);
+    printf("%s", styledwriter.write(config).c_str());
 
     if (ret < 0)
         config.clear();
@@ -456,7 +469,7 @@ static void read_cb(struct bufferevent *bev, void *user_data)
     }
     fprintf(stdout, "\n");
 #endif
-    fprintf(stdout, "%s\n", buf);
+    //fprintf(stdout, "%s\n", buf);
 
     free(buf);
 
