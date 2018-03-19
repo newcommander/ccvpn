@@ -12,7 +12,14 @@ var main = new Vue({
     el: '#main',
     data: {
         config: "NULL",
-        num: 1
+        num: 1,
+        route_table_title: [
+            { title: 'subnet', key: 'subnet' },
+            { title: 'netmask', key: 'netmask' }
+        ],
+        route_table_items: [ {} ],
+        new_route_subnet: "",
+        new_route_netmask: "ll"
     },
     methods: {
         showMessage: function () {
@@ -21,6 +28,11 @@ var main = new Vue({
         change_ca_path: function (e) {
             this.$Message('Change CA path: ' + this.num);
             this.num += 1;
+        },
+        new_route_click: function () {
+            this.$Modal.prompt({ title: 'New Route', content: 'subnet:' }).then((data) => { `this.$new_route_subnet = ${data.value}`;this.$Message("this.$new_route_subnet"); }).catch()
+        },
+        del_route_click: function () {
         },
         update_config: function (data, status) {
             config = data;
@@ -55,6 +67,7 @@ var main = new Vue({
             this.$refs.server_netmask.currentValue = config.server.netmask;
             this.$refs.status.currentValue = config.status;
             this.$refs.verb.currentValue = config.verb;
+            this.route_table_items = config.route;
         },
         reload_click: function () {
             var lala = '{"op":"reload"}';

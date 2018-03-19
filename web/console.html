@@ -280,7 +280,9 @@
                                             <h4>Route</h4>
                                         </div>
                                         <div class="content-item-text">
-                                            .........
+                                            <at-table :columns="route_table_title" :data="route_table_items" optional></at-table>
+                                            <at-button @click="new_route_click" type="primary" size="smaller">New</at-button>
+                                            <at-button @click="del_route_click" type="error" size="smaller">Del</at-button>
                                         </div>
                                     </div>
                                 </div>
