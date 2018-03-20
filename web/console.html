@@ -97,7 +97,7 @@
                                             <h4>Port</h4>
                                         </div>
                                         <div class="content-item-text">
-                                            <at-input-number ref="port" size="small" value="2346" min="1024" max="65535"></at-input-number>
+                                            <at-input-number ref="port" size="small" value="2346" min=1024 max=65535></at-input-number>
                                         </div>
                                     </div>
                                 </div>
@@ -280,7 +280,7 @@
                                             <h4>Route</h4>
                                         </div>
                                         <div class="content-item-text">
-                                            <at-table :columns="route_table_title" :data="route_table_items" optional></at-table>
+                                            <at-table :columns="route_table_title" :data=route_table_items optional></at-table>
                                             <at-button @click="new_route_click" type="primary" size="smaller">New</at-button>
                                             <at-button @click="del_route_click" type="error" size="smaller">Del</at-button>
                                         </div>
@@ -313,7 +313,7 @@
                                             <h4>Verbosity</h4>
                                         </div>
                                         <div class="content-item-text">
-                                            <at-slider v-model="value" :min="0" :max="11"></at-slider>
+                                            <at-slider v-model="value" :min=0 :max=11></at-slider>
                                             <at-input ref="verb" placeholder="0"></at-input>
                                         </div>
                                     </div>
@@ -372,7 +372,7 @@
                                             <h4 slot="title">PORT</h4>
                                             <div slot="extra">
                                                 <div class="margin-top-10">
-                                                    <at-input-number ref="port_old" size="small" value="2346" min="1024" max="65535"></at-input-number>
+                                                    <at-input-number ref="port_old" size="small" value="2346" min=1024 max=65535></at-input-number>
                                                 </div>
                                             </div>
                                             <div>

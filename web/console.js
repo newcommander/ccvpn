@@ -17,9 +17,12 @@ var main = new Vue({
             { title: 'subnet', key: 'subnet' },
             { title: 'netmask', key: 'netmask' }
         ],
-        route_table_items: [ {} ],
-        new_route_subnet: "",
-        new_route_netmask: "ll"
+        route_table_items: [
+			{ "netmask" : "255.255.255.1",	"subnet" : "192.168.1.2" },
+			{ "netmask" : "255.255.255.1",	"subnet" : "192.168.3.4" }
+		],
+        new_route_subnet: "pp",
+        new_route_netmask: ""
     },
     methods: {
         showMessage: function () {
@@ -30,7 +33,19 @@ var main = new Vue({
             this.num += 1;
         },
         new_route_click: function () {
-            this.$Modal.prompt({ title: 'New Route', content: 'subnet:' }).then((data) => { `this.$new_route_subnet = ${data.value}`;this.$Message("this.$new_route_subnet"); }).catch()
+            this.$Modal.prompt({
+				title: 'New Route', content: 'subnet:'
+			}).then((data) => {
+				this.new_route_subnet = data.value;
+
+				this.$Modal.prompt({
+					title: 'New Route', content: 'netmask:'
+				}).then((data1) => {
+					this.new_route_netmask = data1.value;
+					//this.route_table_items.push({ "subnet": this.new_route_subnet, "netmask": this.new_route_netmask });
+					//this.$Message(this.new_route_subnet + " " + this.new_route_netmask);
+				}).catch();
+			}).catch();
         },
         del_route_click: function () {
         },
@@ -67,7 +82,11 @@ var main = new Vue({
             this.$refs.server_netmask.currentValue = config.server.netmask;
             this.$refs.status.currentValue = config.status;
             this.$refs.verb.currentValue = config.verb;
-            this.route_table_items = config.route;
+//            this.route_table_items = config.route;
+//					this.route_table_items = [
+//						{ "netmask" : "255.255.255.1",	"subnet" : "192.168.1.2" },
+//						{ "netmask" : "255.255.255.1",	"subnet" : "192.168.3.4" }
+//					];
         },
         reload_click: function () {
             var lala = '{"op":"reload"}';
