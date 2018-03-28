@@ -22,9 +22,13 @@ var main = new Vue({
 			{ "netmask" : "255.255.255.1",	"subnet" : "192.168.3.4" }
 		],
         new_route_subnet: "pp",
-        new_route_netmask: ""
+        new_route_netmask: "",
+        switch1: true
     },
     methods: {
+        iview_button_change (status) {
+            this.$Message.info('开关状态：' + status);
+        },
         showMessage: function () {
             this.$Message('message from main');
         },
@@ -63,7 +67,7 @@ var main = new Vue({
                 else if (config.cmd[i] == "persist_tun")
                     this.$refs.persist_tun.checkStatus = true;
             }
-            //this.$refs.port.currentValue = config.port;
+            this.$refs.port.currentValue = config.port;
             this.$refs.port.currentValue = 3726;
             this.$refs.ca.currentValue = config.ca;
             this.$refs.server_cert.currentValue = config.cert;

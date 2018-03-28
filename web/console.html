@@ -4,10 +4,12 @@
 <title>Console</title>
 <meta charset="UTF-8">
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/at-ui-style/css/at.min.css">
+<link rel="stylesheet" type="text/css" href="http://unpkg.com/iview/dist/styles/iview.css">
 <link rel="stylesheet" href="css/console.css">
 <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="js/vue.min.js"></script>
 <script type="text/javascript" src="js/at.min.js"></script>
+<script type="text/javascript" src="js/iview.min.js"></script>
 <script type="text/javascript" src="js/console.js"></script>
 </head>
 <body>
@@ -58,6 +60,7 @@
                 <div class="content">
                     <div class="content-title">Server Configuration</div>
                     <div class="content-base">
+                    <i-switch v-model="switch1" @on-change="iview_button_change"></i-switch>
                         <div class="content-buttons" align="right">
                             <at-button @click="reload_click" type="primary" size="large">Reload</at-button>
                             <at-button @click="reset_click" type="primary" size="large">Reset</at-button>
