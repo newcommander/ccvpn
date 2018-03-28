@@ -4,11 +4,11 @@
 <title>Console</title>
 <meta charset="UTF-8">
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/at-ui-style/css/at.min.css">
-<link rel="stylesheet" href="console.css">
-<script type="text/javascript" src="jquery-3.3.1.min.js"></script>
-<script src="//cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-<script src="//cdn.jsdelivr.net/npm/at-ui/dist/at.min.js"></script>
-<script type="text/javascript" src="console.js"></script>
+<link rel="stylesheet" href="css/console.css">
+<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="js/vue.min.js"></script>
+<script type="text/javascript" src="js/at.min.js"></script>
+<script type="text/javascript" src="js/console.js"></script>
 </head>
 <body>
 <div class="header" id="header">
@@ -97,7 +97,7 @@
                                             <h4>Port</h4>
                                         </div>
                                         <div class="content-item-text">
-                                            <at-input-number ref="port" size="small" value="2346" min=1024 max=65535></at-input-number>
+                                            <at-input-number ref="port" size="small" :value=2346 :min=1024 :max=65535></at-input-number>
                                         </div>
                                     </div>
                                 </div>
@@ -313,7 +313,6 @@
                                             <h4>Verbosity</h4>
                                         </div>
                                         <div class="content-item-text">
-                                            <at-slider v-model="value" :min=0 :max=11></at-slider>
                                             <at-input ref="verb" placeholder="0"></at-input>
                                         </div>
                                     </div>
@@ -372,7 +371,7 @@
                                             <h4 slot="title">PORT</h4>
                                             <div slot="extra">
                                                 <div class="margin-top-10">
-                                                    <at-input-number ref="port_old" size="small" value="2346" min=1024 max=65535></at-input-number>
+                                                    <at-input-number ref="port_old" size="small" :value=2346 :min=1024 :max=65535></at-input-number>
                                                 </div>
                                             </div>
                                             <div>

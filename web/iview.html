@@ -4,8 +4,8 @@
 	<meta charset="utf-8">
 	<title>iview example</title>
 	<link rel="stylesheet" type="text/css" href="http://unpkg.com/iview/dist/styles/iview.css">
-	<script type="text/javascript" src="http://vuejs.org/js/vue.min.js"></script>
-	<script type="text/javascript" src="http://unpkg.com/iview/dist/iview.min.js"></script>
+	<script type="text/javascript" src="js/vue.min.js"></script>
+	<script type="text/javascript" src="js/iview.min.js"></script>
 </head>
 <body>
 	<div id="app">
@@ -23,13 +23,26 @@
 				<span>Windows</span>
 			</Radio>
 		</Radio-group>
+        <Slider v-model="value" range></Slider>
+        <i-switch v-model="switch1" @on-change="change"></i-switch>
+        <i-progress :percent="100">
+            <Icon type="checkmark-circled"></Icon>
+            <span>成功</span>
+        </i-progress>
 	</div>
 	<script>
 		var vm=new Vue({
 			el: '#app',
 			data: {
-				phone: 'apple'
-			}
+				phone: 'apple',
+                value: [20, 40],
+                switch1: false
+			},
+            methods: {
+                change (status) {
+                    this.$Message.info('开关状态：' + status);
+                }
+            }
 		})
 	</script>
 </body>
