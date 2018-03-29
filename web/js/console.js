@@ -23,7 +23,11 @@ var main = new Vue({
 		],
         new_route_subnet: "pp",
         new_route_netmask: "",
-        switch1: true
+        deamon_mode: false,
+        client_to_client: false,
+        ask_passwd: false,
+        persist_key: false,
+        persist_tun: false
     },
     methods: {
         iview_button_change (status) {
@@ -57,15 +61,15 @@ var main = new Vue({
             config = data;
             for (i in config.cmd) {
                 if (config.cmd[i] == "daemon")
-                    this.$refs.deamon_mode.checkStatus = true;
+                    this.deamon_mode = true;
                 else if (config.cmd[i] == "askpass")
-                    this.$refs.ask_passwd.checkStatus = true;
+                    this.ask_passwd = true;
                 else if (config.cmd[i] == "client_to_client")
-                    this.$refs.client_to_client.checkStatus = true;
+                    this.client_to_client = true;
                 else if (config.cmd[i] == "persist_key")
-                    this.$refs.persist_key.checkStatus = true;
+                    this.persist_key = true;
                 else if (config.cmd[i] == "persist_tun")
-                    this.$refs.persist_tun.checkStatus = true;
+                    this.persist_tun = true;
             }
             this.$refs.port.currentValue = config.port;
             this.$refs.port.currentValue = 3726;
@@ -98,10 +102,10 @@ var main = new Vue({
             $.post('d', lala, this.update_config);
         },
         reset_click: function () {
-            this.$Message('reset-click');
+            this.$Message.info('reset-click');
         },
         save_click: function () {
-            this.$Message('save-click');
+            this.$Message.info('save-click');
         }
     }
 });

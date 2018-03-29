@@ -60,11 +60,10 @@
                 <div class="content">
                     <div class="content-title">Server Configuration</div>
                     <div class="content-base">
-                    <i-switch v-model="switch1" @on-change="iview_button_change"></i-switch>
                         <div class="content-buttons" align="right">
-                            <at-button @click="reload_click" type="primary" size="large">Reload</at-button>
-                            <at-button @click="reset_click" type="primary" size="large">Reset</at-button>
-                            <at-button @click="save_click" type="primary" size="large">Save</at-button>
+                            <i-button type="primary" size="large" @click="reload_click">Reload</i-button>
+                            <i-button type="primary" size="large" @click="reset_click">Reset</i-button>
+                            <i-button type="primary" size="large" @click="save_click">Save</i-button>
                         </div>
                         <div class="content-container">
                             <div class="content-l">
@@ -74,10 +73,10 @@
                                             <h4>Deamon mode</h4>
                                         </div>
                                         <div class="content-item-switch">
-                                            <at-switch ref="deamon_mode" size="large">
-                                                <span slot="checkedText">ON</span>
-                                                <span slot="unCheckedText">OFF</span>
-                                            </at-switch size="large">
+                                            <i-switch v-model="deamon_mode" size="large">
+                                                <span slot="open">ON</span>
+                                                <span slot="close">OFF</span>
+                                            </i-switch>
                                         </div>
                                     </div>
                                 </div>
@@ -87,10 +86,10 @@
                                             <h4>Client to Client</h4>
                                         </div>
                                         <div class="content-item-switch">
-                                            <at-switch ref="client_to_client" size="large">
-                                                <span slot="checkedText">ON</span>
-                                                <span slot="unCheckedText">OFF</span>
-                                            </at-switch size="large">
+                                            <i-switch v-model="client_to_client" size="large">
+                                                <span slot="open">ON</span>
+                                                <span slot="close">OFF</span>
+                                            </i-switch>
                                         </div>
                                     </div>
                                 </div>
@@ -224,10 +223,10 @@
                                             <h4>Ask password</h4>
                                         </div>
                                         <div class="content-item-switch">
-                                            <at-switch ref="ask_passwd" size="large">
-                                                <span slot="checkedText">ON</span>
-                                                <span slot="unCheckedText">OFF</span>
-                                            </at-switch size="large">
+                                            <i-switch v-model="ask_passwd" size="large">
+                                                <span slot="open">ON</span>
+                                                <span slot="close">OFF</span>
+                                            </i-switch>
                                         </div>
                                     </div>
                                 </div>
@@ -237,10 +236,10 @@
                                             <h4>Persist key</h4>
                                         </div>
                                         <div class="content-item-switch">
-                                            <at-switch ref="persist_key" size="large">
-                                                <span slot="checkedText">ON</span>
-                                                <span slot="unCheckedText">OFF</span>
-                                            </at-switch size="large">
+                                            <i-switch v-model="persist_key" size="large">
+                                                <span slot="open">ON</span>
+                                                <span slot="close">OFF</span>
+                                            </i-switch>
                                         </div>
                                     </div>
                                 </div>
@@ -250,10 +249,10 @@
                                             <h4>Persist tun</h4>
                                         </div>
                                         <div class="content-item-switch">
-                                            <at-switch ref="persist_tun" size="large">
-                                                <span slot="checkedText">ON</span>
-                                                <span slot="unCheckedText">OFF</span>
-                                            </at-switch size="large">
+                                            <i-switch v-model="persist_tun" size="large">
+                                                <span slot="open">ON</span>
+                                                <span slot="close">OFF</span>
+                                            </i-switch>
                                         </div>
                                     </div>
                                 </div>
