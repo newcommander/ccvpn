@@ -15,7 +15,28 @@ var main = new Vue({
         num: 1,
         route_table_title: [
             { title: 'subnet', key: 'subnet' },
-            { title: 'netmask', key: 'netmask' }
+            { title: 'netmask', key: 'netmask' },
+            {
+                title: ' ',
+                key: 'action',
+                width: 70,
+                align: 'center',
+                render: (h, params) => {
+                    return h('div', [
+                        h('Button', {
+                            props: {
+                                type: 'error',
+                                size: 'small'
+                            },
+                            on: {
+                                click: () => {
+                                    main.remove_route_item(params.index);
+                                }
+                            }
+                        }, 'Del')
+                    ]);
+                }
+            }
         ],
         route_table_items: [
 			{ "netmask" : "255.255.255.1",	"subnet" : "192.168.1.2" },
@@ -30,6 +51,9 @@ var main = new Vue({
         persist_tun: false
     },
     methods: {
+        remove_route_item: function (index) {
+            this.route_table_items.splice(index, 1);
+        },
         iview_button_change (status) {
             this.$Message.info('开关状态：' + status);
         },
@@ -91,17 +115,13 @@ var main = new Vue({
             this.$refs.server_netmask.currentValue = config.server.netmask;
             this.$refs.status.currentValue = config.status;
             this.$refs.verb.currentValue = config.verb;
-//            this.route_table_items = config.route;
-//					this.route_table_items = [
-//						{ "netmask" : "255.255.255.1",	"subnet" : "192.168.1.2" },
-//						{ "netmask" : "255.255.255.1",	"subnet" : "192.168.3.4" }
-//					];
         },
         reload_click: function () {
             var lala = '{"op":"reload"}';
             $.post('d', lala, this.update_config);
         },
         reset_click: function () {
+            this.route_table_items.push({ "netmask" : "255.255.4.1",  "subnet" : "192.168.1.4" });
             this.$Message.info('reset-click');
         },
         save_click: function () {
