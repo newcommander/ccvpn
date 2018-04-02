@@ -282,7 +282,8 @@
                                             <h4>Route</h4>
                                         </div>
                                         <div class="content-item-text">
-                                            <i-table border :columns="route_table_title" :data="route_table_items"></i-table>
+                                            <i-table border :columns="route_table_title" :data="route_table_items" no-data-text="No Data" no-filtered-data-text="No    Filtered Data"></i-table>
+                                            <i-table border :columns="new_route_table_title" :data="new_route_table_items" no-data-text="No Data" :show-header=false></i-table>
                                             <!--
                                             <at-table :columns="route_table_title" :data=route_table_items optional></at-table>
                                             <at-button @click="new_route_click" type="primary" size="smaller">New</at-button>

@@ -14,8 +14,8 @@ var main = new Vue({
         config: "NULL",
         num: 1,
         route_table_title: [
-            { title: 'subnet', key: 'subnet' },
-            { title: 'netmask', key: 'netmask' },
+            { title: 'Subnet', key: 'subnet' },
+            { title: 'Netmask', key: 'netmask' },
             {
                 title: ' ',
                 key: 'action',
@@ -43,7 +43,69 @@ var main = new Vue({
 			{ "netmask" : "255.255.255.1",	"subnet" : "192.168.3.4" }
 		],
         new_route_subnet: "pp",
-        new_route_netmask: "",
+        new_route_netmask: "hh",
+        new_route_table_title: [
+            {
+                title: 'Subnet',
+                key: 'subnet',
+                render: (h, params) => {
+                    return h('div', [
+                        h('Input', {
+                            props: {
+                                placeholder: 'subnet'
+                            },
+                            on: {
+                                input: (value) => {
+                                    this.new_subnet = value;
+                                }
+                            }
+                        }, ' ')
+                    ]);
+                }
+            },
+            {
+                title: 'Netmask',
+                key: 'netmask',
+                render: (h, params) => {
+                    return h('div', [
+                        h('Input', {
+                            props: {
+                                placeholder: 'netmask'
+                            },
+                            on: {
+                                input: (value) => {
+                                    this.new_netmask = value;
+                                }
+                            }
+                        }, ' ')
+                    ]);
+                }
+            },
+            {
+                title: ' ',
+                key: 'action',
+                width: 70,
+                align: 'center',
+                render: (h, params) => {
+                    return h('div', [
+                        h('Button', {
+                            props: {
+                                type: 'primary',
+                                size: 'small'
+                            },
+                            on: {
+                                click: () => {
+                                    main.route_table_items.push({ "subnet" : this.new_subnet,  "netmask" : this.new_netmask });
+                                    this.new_subnet = '';
+                                    this.new_netmask = '';
+                                }
+                            }
+                        }, 'Add')
+                    ]);
+                }
+            }
+        ],
+        new_route_table_items: [ {} ],
         deamon_mode: false,
         client_to_client: false,
         ask_passwd: false,
