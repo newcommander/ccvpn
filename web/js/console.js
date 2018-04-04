@@ -96,8 +96,7 @@ var main = new Vue({
                             on: {
                                 click: () => {
                                     main.route_table_items.push({ "subnet" : this.new_subnet,  "netmask" : this.new_netmask });
-                                    this.new_subnet = '';
-                                    this.new_netmask = '';
+                                    main.refresh_new_route_table();
                                 }
                             }
                         }, 'Add')
@@ -113,6 +112,10 @@ var main = new Vue({
         persist_tun: false
     },
     methods: {
+        refresh_new_route_table: function () {
+            this.new_route_table_items = [];
+            this.new_route_table_items = [ {} ];
+        },
         remove_route_item: function (index) {
             this.route_table_items.splice(index, 1);
         },
@@ -183,7 +186,6 @@ var main = new Vue({
             $.post('d', lala, this.update_config);
         },
         reset_click: function () {
-            this.route_table_items.push({ "netmask" : "255.255.4.1",  "subnet" : "192.168.1.4" });
             this.$Message.info('reset-click');
         },
         save_click: function () {
