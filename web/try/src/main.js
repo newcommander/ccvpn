@@ -36,9 +36,6 @@ router.afterEach(() => {
 
 new Vue({
     el: '#app',
-	data: {
-		value1: 'nihao'
-	},
     router: router,
     render: h => h(App)
 });
