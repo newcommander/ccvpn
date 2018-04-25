@@ -346,7 +346,7 @@
                                     },
                                     on: {
                                         click: () => {
-                                            main.remove_route_item(params.index);
+                                            this.remove_route_item(params.index);
                                         }
                                     }
                                 }, 'Del')
@@ -411,8 +411,8 @@
                                 },
                                 on: {
                                     click: () => {
-                                        main.route_table_items.push({ "subnet" : this.new_subnet,  "netmask" : this.new_netmask });
-                                        main.refresh_new_route_table();
+                                        this.route_table_items.push({ "subnet" : this.new_subnet,  "netmask" : this.new_netmask });
+                                        this.refresh_new_route_table();
                                     }
                                 }
                             }, 'Add')
@@ -423,6 +423,13 @@
             }
         },
         methods: {
+            refresh_new_route_table: function () {
+                this.new_route_table_items = [];
+                this.new_route_table_items = [ {} ];
+            },
+            remove_route_item: function (index) {
+                this.route_table_items.splice(index, 1);
+            },
             handleStart() {
                 this.$Modal.info({
                     title: 'Bravo',

@@ -386,7 +386,7 @@ out:
     fclose(fp);
 
     config_string = fastwriter.write(config);
-    printf("%s", styledwriter.write(config).c_str());
+    //printf("%s", styledwriter.write(config).c_str());
 
     if (ret < 0)
         config.clear();
