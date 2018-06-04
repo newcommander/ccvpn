@@ -116,7 +116,9 @@
                                     <h4>Cipher</h4>
 								</div>
 								<div class="content-item-text">
-                                    <Input v-model="cipher" placeholder="none"></Input>
+                                    <Select size="large" placeholder="Select..." not-found-text="no data found">
+                                        <Option v-for="item in ciphers" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                                    </Select>
 								</div>
 							</div>
 						</div>
@@ -329,6 +331,19 @@
                 config: {},
                 daemon_mode: false,
                 ask_passwd: false,
+                client_to_client: false,
+                persist_key: false,
+                persist_tun: false,
+                ca: "",
+                server_cert: "",
+                ciphers: [
+                    { value: "AES-256-CBC", label: "AES-256-CBC" },
+                    { value: "AES-128-GCM", label: "AES-128-GCM" }
+                ],
+                ccd: "",
+                dev_type: "",
+                dh_file: "",
+                ipp: "",
                 route_table_title: [
                     { title: 'Subnet', key: 'subnet' },
                     { title: 'Netmask', key: 'netmask' },
@@ -447,7 +462,20 @@
                         this.daemon_mode = true;
                     else if (this.config.cmd[i] == "askpass")
                         this.ask_passwd = true;
+                    else if (this.config.cmd[i] == "client_to_client")
+                        this.client_to_client = true;
+                    else if (this.config.cmd[i] == "persist_key")
+                        this.persist_key = true;
+                    else if (this.config.cmd[i] == "persist_tun")
+                        this.persist_tun = true;
                 }
+                this.ca = this.config.ca;
+                this.server_cert = this.config.cert;
+                this.cipher = this.config.cipher; // TODO
+                this.ccd = this.config.client_config_dir;
+                this.dev_type = this.config.dev;
+                this.dh_file = this.config.dh;
+                this.ipp = this.config.ifconfig_pool_persist;
                 this.$Message.info('' + JSON.stringify(this.config));
             }
         }
