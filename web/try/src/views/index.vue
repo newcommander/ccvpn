@@ -85,8 +85,8 @@
 								<div class="content-item-title">
                                     <h4>Port</h4>
 								</div>
-								<div class="content-item-text">
-                                    <InputNumber :min="1024" :max="65535" :value="1024" v-model="port"></InputNumber>
+                                <div class="content-item-text">
+                                    <InputNumber :min="1024" :max="65535" :value="2346" v-model="port"></InputNumber>
 								</div>
 							</div>
 						</div>
@@ -128,7 +128,7 @@
                                     <h4>Client configuration directroy</h4>
 								</div>
 								<div class="content-item-text">
-                                    <Input v-model="ccd" placeholder="none"></Input>
+                                    <Input v-model="client_config_dir" placeholder="none"></Input>
 								</div>
 							</div>
 						</div>
@@ -138,7 +138,10 @@
                                     <h4>Device type</h4>
 								</div>
 								<div class="content-item-text">
-                                    <Input v-model="dev_type" placeholder="none"></Input>
+                                    <RadioGroup v-model="dev_type" size="large" type="button">
+                                        <Radio label="tun" size="large"></Radio>
+                                        <Radio label="tap" size="large"></Radio>
+                                    </RadioGroup>
 								</div>
 							</div>
 						</div>
@@ -158,7 +161,7 @@
                                     <h4>ifconfig-pool-persist</h4>
 								</div>
 								<div class="content-item-text">
-                                    <Input v-model="ipp" placeholder="ifconfig-pool-persist"></Input>
+                                    <Input v-model="ifconfig_pool_persist" placeholder="ifconfig-pool-persist"></Input>
 								</div>
 							</div>
 						</div>
@@ -168,15 +171,15 @@
                                     <h4>Keep alive</h4>
 								</div>
 								<div class="content-item-text">
-                                    <Input v-model="keepalive_interval" placeholder="none"></Input>
-                                    <Input v-model="keepalive_timeout" placeholder="none"></Input>
+                                    <InputNumber :min="5" :max="7200" :value="10" v-model="keepalive_interval"></InputNumber>
+                                    <InputNumber :min="10" :max="7200" :value="20" v-model="keepalive_timeout"></InputNumber>
 								</div>
 							</div>
 						</div>
 						<div class="content-item">
 							<div class="content-item-base">
 								<div class="content-item-title">
-                                    <h4>Key</h4>
+                                    <h4>Key file</h4>
 								</div>
 								<div class="content-item-text">
                                     <Input v-model="key" placeholder="none"></Input>
@@ -186,10 +189,10 @@
 						<div class="content-item">
 							<div class="content-item-base">
 								<div class="content-item-title">
-                                    <h4>Log append</h4>
+                                    <h4>Log file</h4>
 								</div>
 								<div class="content-item-text">
-                                    <Input v-model="log_append" placeholder="none"></Input>
+                                    <Input v-model="log_file" placeholder="none"></Input>
 								</div>
 							</div>
 						</div>
@@ -199,8 +202,8 @@
                                     <h4>Management</h4>
 								</div>
 								<div class="content-item-text">
-                                    <Input v-model="mng_addr" placeholder="none"></Input>
-                                    <Input v-model="mng_port" placeholder="none"></Input>
+                                    <Input v-model="management_address" placeholder="none"></Input>
+                                    <InputNumber :min="1024" :max="65535" :value="1024" v-model="management_port"></InputNumber>
 								</div>
 							</div>
 						</div>
@@ -340,10 +343,28 @@
                     { value: "AES-256-CBC", label: "AES-256-CBC" },
                     { value: "AES-128-GCM", label: "AES-128-GCM" }
                 ],
-                ccd: "",
-                dev_type: "",
+                client_config_dir: "",
+                dev_type: [
+                    { value: "tun", label: "tun" },
+                    { value: "tap", label: "tap" }
+                ],
                 dh_file: "",
-                ipp: "",
+                ifconfig_pool_persist: "",
+                keepalive_interval: 10,
+                keepalive_timeout: 20,
+                key: "",
+                log_file: "",
+                management_address: "",
+                management_port: 7755,
+                protocol: "",
+                port: 2346,
+                push: {}, // TODO
+                route: [], // TODO
+                server_netmask: "",
+                server_subnet: "",
+                status: "",
+                verb: 3,
+                additional: "default additional...",
                 route_table_title: [
                     { title: 'Subnet', key: 'subnet' },
                     { title: 'Netmask', key: 'netmask' },
@@ -472,10 +493,24 @@
                 this.ca = this.config.ca;
                 this.server_cert = this.config.cert;
                 this.cipher = this.config.cipher; // TODO
-                this.ccd = this.config.client_config_dir;
-                this.dev_type = this.config.dev;
+                this.client_config_dir = this.config.client_config_dir;
+                //this.dev_type = this.config.dev; // TODO
                 this.dh_file = this.config.dh;
-                this.ipp = this.config.ifconfig_pool_persist;
+                this.ifconfig_pool_persist = this.config.ifconfig_pool_persist;
+                this.keepalive_interval = this.config.keepalive.interval;
+                this.keepalive_timeout = this.config.keepalive.timeout;
+                this.key = this.config.key;
+                this.log_file = this.config.log_append;
+                this.management_address = this.config.management.address;
+                this.management_port = this.config.management.port;
+                this.protocol = this.config.proto;
+                this.port = this.config.port;
+                //this.push = // TODO
+                //this.route = // TODO
+                this.server_netmask = this.config.server.netmask;
+                this.server_subnet = this.config.server.subnet;
+                this.status = this.config.status;
+                this.verb = this.config.verb;
                 this.$Message.info('' + JSON.stringify(this.config));
             }
         }
